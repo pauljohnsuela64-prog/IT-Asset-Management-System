@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Add Asset</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Add Asset</h1>
+
+    <p>Add a new IT asset to the system.</p>
+
+    {% if error %}
+
+        <div class="error">
+            {{ error }}
+        </div>
+
+    {% endif %}
+
+    <form method="POST">
+
+        <label>Asset Tag</label>
+
+        <input
+            type="text"
+            name="asset_tag"
+            placeholder="Example: AST-001"
+            required
+        >
+
+
+        <label>Device Name</label>
+
+        <input
+            type="text"
+            name="device_name"
+            placeholder="Example: Accounting Laptop 01"
+            required
+        >
+
+
+        <label>Asset Type</label>
+
+        <select name="asset_type" required>
+
+            <option value="">Select Asset Type</option>
+            <option value="Laptop">Laptop</option>
+            <option value="Desktop">Desktop</option>
+            <option value="Monitor">Monitor</option>
+            <option value="Printer">Printer</option>
+            <option value="Network Device">Network Device</option>
+            <option value="Mobile Device">Mobile Device</option>
+            <option value="Peripheral">Peripheral</option>
+            <option value="Other">Other</option>
+
+        </select>
+
+
+        <label>Brand</label>
+
+        <input
+            type="text"
+            name="brand"
+            placeholder="Example: Lenovo"
+            required
+        >
+
+
+        <label>Model</label>
+
+        <input
+            type="text"
+            name="model"
+            placeholder="Example: ThinkPad E14"
+        >
+
+
+        <label>Serial Number</label>
+
+        <input
+            type="text"
+            name="serial_number"
+            placeholder="Example: PF123456"
+        >
+
+
+        <label>Purchase Date</label>
+
+        <input
+            type="date"
+            name="purchase_date"
+        >
+
+
+        <label>Notes</label>
+
+        <textarea
+            name="notes"
+            rows="4"
+            placeholder="Optional notes about the asset"
+        ></textarea>
+
+
+        <div class="form-actions">
+
+            <button type="submit">
+                Save Asset
+            </button>
+
+            <a href="{{ url_for('home') }}">
+                Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+</html>
