@@ -1,11 +1,15 @@
-from flask import Flask
+from flask import Flask, render_template
+
+from asset_repository import get_all_assets
+
 
 app = Flask(__name__)
 
 
 @app.route("/")
 def home():
-    return "<h1>IT Asset Management System</h1>"
+    assets = get_all_assets()
+    return render_template("assets.html", assets=assets)
 
 
 if __name__ == "__main__":

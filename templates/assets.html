@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>IT Asset Management System</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>IT Asset Management System</h1>
+        <p>Asset Management</p>
+
+        <div class="section-header">
+            <h2>Assets</h2>
+
+            <button type="button">
+                Add Asset
+            </button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Asset Tag</th>
+                    <th>Device Name</th>
+                    <th>Type</th>
+                    <th>Brand</th>
+                    <th>Model</th>
+                    <th>Serial Number</th>
+                    <th>Status</th>
+                    <th>Purchase Date</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for asset in assets %}
+
+                <tr>
+                    <td>{{ asset.asset_id }}</td>
+                    <td>{{ asset.asset_tag }}</td>
+                    <td>{{ asset.device_name }}</td>
+                    <td>{{ asset.asset_type }}</td>
+                    <td>{{ asset.brand }}</td>
+                    <td>{{ asset.model or '-' }}</td>
+                    <td>{{ asset.serial_number or '-' }}</td>
+                    <td>{{ asset.status }}</td>
+                    <td>{{ asset.purchase_date or '-' }}</td>
+                </tr>
+
+                {% else %}
+
+                <tr>
+                    <td colspan="9">
+                        No assets found.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+        </table>
+
+    </div>
+
+</body>
+</html>
