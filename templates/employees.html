@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Employee Management</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>IT Asset Management System</h1>
+    <p>Employee Management</p>
+
+    <div class="section-header">
+
+        <h2>Employees</h2>
+
+        <a href="{{ url_for('add_employee') }}">
+    <button type="button">
+        Add Employee
+    </button>
+    </a>
+
+    </div>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>ID</th>
+                <th>Employee Code</th>
+                <th>Full Name</th>
+                <th>Department</th>
+                <th>Position</th>
+                <th>Email</th>
+                <th>Status</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for employee in employees %}
+
+            <tr>
+
+                <td>{{ employee.employee_id }}</td>
+                <td>{{ employee.employee_code }}</td>
+                <td>{{ employee.full_name }}</td>
+                <td>{{ employee.department }}</td>
+                <td>{{ employee.position or '-' }}</td>
+                <td>{{ employee.email or '-' }}</td>
+                <td>{{ employee.status }}</td>
+
+            </tr>
+
+            {% else %}
+
+            <tr>
+                <td colspan="7">
+                    No employees found.
+                </td>
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+    <br>
+
+    <a href="{{ url_for('home') }}">
+        Back to Assets
+    </a>
+
+</div>
+
+</body>
+
+</html>

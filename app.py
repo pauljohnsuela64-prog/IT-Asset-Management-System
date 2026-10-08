@@ -1,5 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, abort
+
 import mysql.connector
+
+from employee_repository import (
+    get_all_employees,
+    create_employee,
+)
 
 from asset_repository import (
     get_all_assets,
@@ -98,7 +104,7 @@ def edit_asset(asset_id):
     
 
     if request.method == "POST":
-        asset_tag = request.form.get("asset_tag", "").strip()
+        asset_tag = request.form.get("asse  t_tag", "").strip()
         device_name = request.form.get("device_name", "").strip()
         asset_type = request.form.get("asset_type", "").strip()
         brand = request.form.get("brand", "").strip()
@@ -198,6 +204,58 @@ def retire_asset_route(asset_id):
         error=None,
     )
 
+@app.route("/employees")
+def employees():
+    employees = get_all_employees()
+
+    return render_template(
+        "employees.html",
+        employees=employees,
+    )
+
+@app.route("/employees/add", methods=["GET", "POST"])
+def add_employee():
+    error = None
+
+    if request.method == "POST":
+        employee_code = request.form.get("employee_code", "").strip()
+        full_name = request.form.get("full_name", "").strip()
+        department = request.form.get("department", "").strip()
+
+        position = request.form.get("position", "").strip() or None
+        email = request.form.get("email", "").strip() or None
+
+        if not employee_code:
+            error = "Employee Code is required."
+
+        elif not full_name:
+            error = "Full Name is required."
+
+        elif not department:
+            error = "Department is required."
+
+        else:
+            try:
+                create_employee(
+                    employee_code,
+                    full_name,
+                    department,
+                    position,
+                    email,
+                )
+
+                return redirect(url_for("employees"))
+
+            except mysql.connector.IntegrityError:
+                error = "Employee Code or Email already exists."
+
+            except mysql.connector.Error:
+                error = "Unable to save the employee. Please try again."
+
+    return render_template(
+        "add_employee.html",
+        error=error,
+    )
 
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)
