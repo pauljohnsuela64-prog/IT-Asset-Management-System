@@ -236,3 +236,38 @@ def update_asset(
 
         if connection and connection.is_connected():
             connection.close()
+
+
+def retire_asset(asset_id):
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """
+            UPDATE assets
+            SET status = 'Retired'
+            WHERE asset_id = %s
+            """,
+            (asset_id,),
+        )
+
+        connection.commit()
+
+        return cursor.rowcount
+
+    except Exception:
+        if connection:
+            connection.rollback()
+
+        raise
+
+    finally:
+        if cursor:
+            cursor.close()
+
+        if connection and connection.is_connected():
+            connection.close()

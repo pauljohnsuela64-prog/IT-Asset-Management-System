@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Retire Asset</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Retire Asset</h1>
+
+    <p>
+        Are you sure you want to retire this asset?
+    </p>
+
+    {% if error %}
+        <div class="error">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <div class="asset-details">
+
+        <p>
+            <strong>Asset ID:</strong>
+            {{ asset.asset_id }}
+        </p>
+
+        <p>
+            <strong>Asset Tag:</strong>
+            {{ asset.asset_tag }}
+        </p>
+
+        <p>
+            <strong>Device Name:</strong>
+            {{ asset.device_name }}
+        </p>
+
+        <p>
+            <strong>Type:</strong>
+            {{ asset.asset_type }}
+        </p>
+
+        <p>
+            <strong>Brand:</strong>
+            {{ asset.brand }}
+        </p>
+
+        <p>
+            <strong>Current Status:</strong>
+            {{ asset.status }}
+        </p>
+
+    </div>
+
+    <form method="POST">
+
+        <button type="submit">
+            Confirm Retire
+        </button>
+
+        <a href="{{ url_for('home') }}">
+            Cancel
+        </a>
+
+    </form>
+
+</div>
+
+</body>
+</html>

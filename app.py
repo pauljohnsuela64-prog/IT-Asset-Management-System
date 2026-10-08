@@ -7,6 +7,7 @@ from asset_repository import (
     search_assets,
     get_asset_by_id,
     update_asset,
+    retire_asset,
 )
 
 
@@ -89,7 +90,12 @@ def edit_asset(asset_id):
     if asset is None:
         abort(404)
 
+    if asset["status"] == "Retired":
+        return "Retired assets cannot be edited.", 403
+
     error = None
+
+    
 
     if request.method == "POST":
         asset_tag = request.form.get("asset_tag", "").strip()
@@ -164,6 +170,32 @@ def edit_asset(asset_id):
         "edit_asset.html",
         asset=asset,
         error=error,
+    )
+
+
+@app.route("/assets/<int:asset_id>/retire", methods=["GET", "POST"])
+def retire_asset_route(asset_id):
+    asset = get_asset_by_id(asset_id)
+
+    if asset is None:
+        abort(404)
+
+    if request.method == "POST":
+        try:
+            retire_asset(asset_id)
+            return redirect(url_for("home"))
+
+        except mysql.connector.Error:
+            return render_template(
+                "retire_asset.html",
+                asset=asset,
+                error="Unable to retire the asset. Please try again.",
+            )
+
+    return render_template(
+        "retire_asset.html",
+        asset=asset,
+        error=None,
     )
 
 
