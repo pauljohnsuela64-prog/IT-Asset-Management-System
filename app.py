@@ -5,6 +5,7 @@ import mysql.connector
 from employee_repository import (
     get_all_employees,
     create_employee,
+    search_employees,
 )
 
 from asset_repository import (
@@ -206,11 +207,17 @@ def retire_asset_route(asset_id):
 
 @app.route("/employees")
 def employees():
-    employees = get_all_employees()
+    search_term = request.args.get("search", "").strip()
+
+    if search_term:
+        employees = search_employees(search_term)
+    else:
+        employees = get_all_employees()
 
     return render_template(
         "employees.html",
         employees=employees,
+        search_term=search_term,
     )
 
 @app.route("/employees/add", methods=["GET", "POST"])

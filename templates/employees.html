@@ -36,6 +36,29 @@
 
     </div>
 
+    <form
+    method="GET"
+    action="{{ url_for('employees') }}"
+    class="search-form"
+>
+
+    <input
+        type="text"
+        name="search"
+        placeholder="Search employees..."
+        value="{{ search_term }}"
+    >
+
+    <button type="submit">
+        Search
+    </button>
+
+    <a href="{{ url_for('employees') }}">
+        Clear
+    </a>
+
+</form>
+
     <table>
 
         <thead>
