@@ -219,3 +219,38 @@ def update_employee(
 
         if connection and connection.is_connected():
             connection.close()
+
+
+def deactivate_employee(employee_id):
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """
+            UPDATE employees
+            SET status = 'Inactive'
+            WHERE employee_id = %s
+            """,
+            (employee_id,),
+        )
+
+        connection.commit()
+
+        return cursor.rowcount
+
+    except Exception:
+        if connection:
+            connection.rollback()
+
+        raise
+
+    finally:
+        if cursor:
+            cursor.close()
+
+        if connection and connection.is_connected():
+            connection.close()

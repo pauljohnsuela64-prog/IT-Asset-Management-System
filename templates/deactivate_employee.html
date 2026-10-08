@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Deactivate Employee</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Deactivate Employee</h1>
+
+    <p>
+        Are you sure you want to deactivate this employee?
+    </p>
+
+    {% if error %}
+        <div class="error">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <div class="employee-details">
+
+        <p>
+            <strong>Employee Code:</strong>
+            {{ employee.employee_code }}
+        </p>
+
+        <p>
+            <strong>Full Name:</strong>
+            {{ employee.full_name }}
+        </p>
+
+        <p>
+            <strong>Department:</strong>
+            {{ employee.department }}
+        </p>
+
+        <p>
+            <strong>Position:</strong>
+            {{ employee.position or '-' }}
+        </p>
+
+        <p>
+            <strong>Current Status:</strong>
+            {{ employee.status }}
+        </p>
+
+    </div>
+
+    <form method="POST">
+
+        <button type="submit">
+            Confirm Deactivate
+        </button>
+
+        <a href="{{ url_for('employees') }}">
+            Cancel
+        </a>
+
+    </form>
+
+</div>
+
+</body>
+</html>

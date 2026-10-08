@@ -91,9 +91,21 @@
                 <td>{{ employee.status }}</td>
                 
                 <td>
+
     <a href="{{ url_for('edit_employee', employee_id=employee.employee_id) }}">
         Edit
     </a>
+
+    {% if employee.status == "Active" %}
+
+        |
+
+        <a href="{{ url_for('deactivate_employee_route', employee_id=employee.employee_id) }}">
+            Deactivate
+        </a>
+
+    {% endif %}
+
 </td>
 
             </tr>

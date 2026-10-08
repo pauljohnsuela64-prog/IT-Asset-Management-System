@@ -8,6 +8,7 @@ from employee_repository import (
     search_employees,
     get_employee_by_id,
     update_employee,
+    deactivate_employee,
 )
 
 from asset_repository import (
@@ -330,6 +331,32 @@ def edit_employee(employee_id):
         "edit_employee.html",
         employee=employee,
         error=error,
+    )
+
+
+@app.route("/employees/<int:employee_id>/deactivate", methods=["GET", "POST"])
+def deactivate_employee_route(employee_id):
+    employee = get_employee_by_id(employee_id)
+
+    if employee is None:
+        abort(404)
+
+    if request.method == "POST":
+        try:
+            deactivate_employee(employee_id)
+            return redirect(url_for("employees"))
+
+        except mysql.connector.Error:
+            return render_template(
+                "deactivate_employee.html",
+                employee=employee,
+                error="Unable to deactivate the employee. Please try again.",
+            )
+
+    return render_template(
+        "deactivate_employee.html",
+        employee=employee,
+        error=None,
     )
 
 if __name__ == "__main__":
