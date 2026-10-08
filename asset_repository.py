@@ -147,3 +147,92 @@ def search_assets(search_term):
 
         if connection and connection.is_connected():
             connection.close()
+
+def get_asset_by_id(asset_id):
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+            SELECT *
+            FROM assets
+            WHERE asset_id = %s
+            """,
+            (asset_id,),
+        )
+
+        return cursor.fetchone()
+
+    finally:
+        if cursor:
+            cursor.close()
+
+        if connection and connection.is_connected():
+            connection.close()
+
+
+def update_asset(
+    asset_id,
+    asset_tag,
+    device_name,
+    asset_type,
+    brand,
+    model,
+    serial_number,
+    status,
+    purchase_date,
+    notes,
+):
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """
+            UPDATE assets
+            SET asset_tag = %s,
+                device_name = %s,
+                asset_type = %s,
+                brand = %s,
+                model = %s,
+                serial_number = %s,
+                status = %s,
+                purchase_date = %s,
+                notes = %s
+            WHERE asset_id = %s
+            """,
+            (
+                asset_tag,
+                device_name,
+                asset_type,
+                brand,
+                model,
+                serial_number,
+                status,
+                purchase_date,
+                notes,
+                asset_id,
+            ),
+        )
+
+        connection.commit()
+        return cursor.rowcount
+
+    except Exception:
+        if connection:
+            connection.rollback()
+        raise
+
+    finally:
+        if cursor:
+            cursor.close()
+
+        if connection and connection.is_connected():
+            connection.close()

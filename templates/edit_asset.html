@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Edit Asset</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Edit Asset</h1>
+    <p>Update the selected IT asset.</p>
+
+    {% if error %}
+        <div class="error">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <form method="POST">
+
+        <label>Asset Tag</label>
+        <input
+            type="text"
+            name="asset_tag"
+            value="{{ asset.asset_tag }}"
+            required
+        >
+
+        <label>Device Name</label>
+        <input
+            type="text"
+            name="device_name"
+            value="{{ asset.device_name }}"
+            required
+        >
+
+        <label>Asset Type</label>
+        <select name="asset_type" required>
+
+            <option value="Laptop"
+                {% if asset.asset_type == "Laptop" %}selected{% endif %}>
+                Laptop
+            </option>
+
+            <option value="Desktop"
+                {% if asset.asset_type == "Desktop" %}selected{% endif %}>
+                Desktop
+            </option>
+
+            <option value="Monitor"
+                {% if asset.asset_type == "Monitor" %}selected{% endif %}>
+                Monitor
+            </option>
+
+            <option value="Printer"
+                {% if asset.asset_type == "Printer" %}selected{% endif %}>
+                Printer
+            </option>
+
+            <option value="Network Device"
+                {% if asset.asset_type == "Network Device" %}selected{% endif %}>
+                Network Device
+            </option>
+
+            <option value="Mobile Device"
+                {% if asset.asset_type == "Mobile Device" %}selected{% endif %}>
+                Mobile Device
+            </option>
+
+            <option value="Peripheral"
+                {% if asset.asset_type == "Peripheral" %}selected{% endif %}>
+                Peripheral
+            </option>
+
+            <option value="Other"
+                {% if asset.asset_type == "Other" %}selected{% endif %}>
+                Other
+            </option>
+
+        </select>
+
+        <label>Brand</label>
+        <input
+            type="text"
+            name="brand"
+            value="{{ asset.brand }}"
+            required
+        >
+
+        <label>Model</label>
+        <input
+            type="text"
+            name="model"
+            value="{{ asset.model or '' }}"
+        >
+
+        <label>Serial Number</label>
+        <input
+            type="text"
+            name="serial_number"
+            value="{{ asset.serial_number or '' }}"
+        >
+
+        <label>Status</label>
+        <select name="status" required>
+
+            <option value="Available"
+                {% if asset.status == "Available" %}selected{% endif %}>
+                Available
+            </option>
+
+            <option value="Assigned"
+                {% if asset.status == "Assigned" %}selected{% endif %}>
+                Assigned
+            </option>
+
+            <option value="Under Maintenance"
+                {% if asset.status == "Under Maintenance" %}selected{% endif %}>
+                Under Maintenance
+            </option>
+
+            <option value="Retired"
+                {% if asset.status == "Retired" %}selected{% endif %}>
+                Retired
+            </option>
+
+        </select>
+
+        <label>Purchase Date</label>
+        <input
+            type="date"
+            name="purchase_date"
+            value="{{ asset.purchase_date or '' }}"
+        >
+
+        <label>Notes</label>
+        <textarea
+            name="notes"
+            rows="4"
+        >{{ asset.notes or '' }}</textarea>
+
+        <div class="form-actions">
+
+            <button type="submit">
+                Save Changes
+            </button>
+
+            <a href="{{ url_for('home') }}">
+                Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+
+</body>
+</html>
+

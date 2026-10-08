@@ -12,6 +12,7 @@
     >
 </head>
 
+
 <body>
 
     <div class="container">
@@ -62,6 +63,7 @@
                     <th>Serial Number</th>
                     <th>Status</th>
                     <th>Purchase Date</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
 
@@ -79,12 +81,17 @@
                     <td>{{ asset.serial_number or '-' }}</td>
                     <td>{{ asset.status }}</td>
                     <td>{{ asset.purchase_date or '-' }}</td>
+                    <td>
+    <a href="{{ url_for('edit_asset', asset_id=asset.asset_id) }}">
+        Edit
+    </a>
+</td>
                 </tr>
 
                 {% else %}
 
                 <tr>
-                    <td colspan="9">
+                    <td colspan="10">
                         No assets found.
                     </td>
                 </tr>
