@@ -20,6 +20,12 @@ from asset_repository import (
     retire_asset,
 )
 
+from assignment_repository import (
+    get_available_assets,
+    get_active_employees,
+    create_assignment,
+)
+
 
 app = Flask(__name__)
 
@@ -357,6 +363,52 @@ def deactivate_employee_route(employee_id):
         "deactivate_employee.html",
         employee=employee,
         error=None,
+    )
+
+@app.route("/assignments/add", methods=["GET", "POST"])
+def add_assignment():
+    available_assets = get_available_assets()
+    active_employees = get_active_employees()
+
+    error = None
+
+    if request.method == "POST":
+        asset_id = request.form.get("asset_id", "").strip()
+        employee_id = request.form.get("employee_id", "").strip()
+        assigned_date = request.form.get("assigned_date", "").strip()
+        notes = request.form.get("notes", "").strip() or None
+
+        if not asset_id:
+            error = "Please select an asset."
+
+        elif not employee_id:
+            error = "Please select an employee."
+
+        elif not assigned_date:
+            error = "Assigned Date is required."
+
+        else:
+            try:
+                create_assignment(
+                    int(asset_id),
+                    int(employee_id),
+                    assigned_date,
+                    notes,
+                )
+
+                return redirect(url_for("home"))
+
+            except ValueError as error_message:
+                error = str(error_message)
+
+            except mysql.connector.Error:
+                error = "Unable to assign the asset. Please try again."
+
+    return render_template(
+        "add_assignment.html",
+        assets=available_assets,
+        employees=active_employees,
+        error=error,
     )
 
 if __name__ == "__main__":

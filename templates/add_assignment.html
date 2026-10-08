@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Assign Asset</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Assign Asset</h1>
+
+    <p>
+        Assign an available IT asset to an active employee.
+    </p>
+
+    {% if error %}
+        <div class="error">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <form method="POST">
+
+        <label>Asset</label>
+
+        <select name="asset_id" required>
+
+            <option value="">
+                Select Asset
+            </option>
+
+            {% for asset in assets %}
+
+                <option value="{{ asset.asset_id }}">
+                    {{ asset.asset_tag }}
+                    -
+                    {{ asset.device_name }}
+                    -
+                    {{ asset.brand }}
+                    {{ asset.model or '' }}
+                </option>
+
+            {% endfor %}
+
+        </select>
+
+
+        <label>Employee</label>
+
+        <select name="employee_id" required>
+
+            <option value="">
+                Select Employee
+            </option>
+
+            {% for employee in employees %}
+
+                <option value="{{ employee.employee_id }}">
+                    {{ employee.employee_code }}
+                    -
+                    {{ employee.full_name }}
+                    -
+                    {{ employee.department }}
+                </option>
+
+            {% endfor %}
+
+        </select>
+
+
+        <label>Assigned Date</label>
+
+        <input
+            type="date"
+            name="assigned_date"
+            required
+        >
+
+
+        <label>Notes</label>
+
+        <textarea
+            name="notes"
+            rows="4"
+            placeholder="Optional assignment notes"
+        ></textarea>
+
+
+        <div class="form-actions">
+
+            <button type="submit">
+                Assign Asset
+            </button>
+
+            <a href="{{ url_for('home') }}">
+                Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+</html>
