@@ -30,6 +30,26 @@
 
         </div>
 
+
+<form method="GET" action="{{ url_for('home') }}" class="search-form">
+
+    <input
+        type="text"
+        name="search"
+        placeholder="Search assets..."
+        value="{{ search_term }}"
+    >
+
+    <button type="submit">
+        Search
+    </button>
+
+    <a href="{{ url_for('home') }}">
+        Clear
+    </a>
+
+</form>
+
         <table>
             <thead>
                 <tr>

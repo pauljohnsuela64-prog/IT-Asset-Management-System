@@ -1,7 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for
 import mysql.connector
 
-from asset_repository import get_all_assets, create_asset
+from asset_repository import (
+    get_all_assets,
+    create_asset,
+    search_assets,
+)
 
 
 app = Flask(__name__)
@@ -9,8 +13,18 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    assets = get_all_assets()
-    return render_template("assets.html", assets=assets)
+    search_term = request.args.get("search", "").strip()
+
+    if search_term:
+        assets = search_assets(search_term)
+    else:
+        assets = get_all_assets()
+
+    return render_template(
+        "assets.html",
+        assets=assets,
+        search_term=search_term,
+    )
 
 
 @app.route("/assets/add", methods=["GET", "POST"])
@@ -56,9 +70,7 @@ def add_asset():
                 return redirect(url_for("home"))
 
             except mysql.connector.IntegrityError:
-                error = (
-                    "Asset Tag or Serial Number already exists."
-                )
+                error = "Asset Tag or Serial Number already exists."
 
             except mysql.connector.Error:
                 error = "Unable to save the asset. Please try again."
