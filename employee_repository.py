@@ -136,3 +136,86 @@ def search_employees(search_term):
 
         if connection and connection.is_connected():
             connection.close()
+
+
+def get_employee_by_id(employee_id):
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+            SELECT *
+            FROM employees
+            WHERE employee_id = %s
+            """,
+            (employee_id,),
+        )
+
+        return cursor.fetchone()
+
+    finally:
+        if cursor:
+            cursor.close()
+
+        if connection and connection.is_connected():
+            connection.close()
+
+
+def update_employee(
+    employee_id,
+    employee_code,
+    full_name,
+    department,
+    position,
+    email,
+    status,
+):
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """
+            UPDATE employees
+            SET employee_code = %s,
+                full_name = %s,
+                department = %s,
+                position = %s,
+                email = %s,
+                status = %s
+            WHERE employee_id = %s
+            """,
+            (
+                employee_code,
+                full_name,
+                department,
+                position,
+                email,
+                status,
+                employee_id,
+            ),
+        )
+
+        connection.commit()
+
+        return cursor.rowcount
+
+    except Exception:
+        if connection:
+            connection.rollback()
+
+        raise
+
+    finally:
+        if cursor:
+            cursor.close()
+
+        if connection and connection.is_connected():
+            connection.close()

@@ -6,6 +6,8 @@ from employee_repository import (
     get_all_employees,
     create_employee,
     search_employees,
+    get_employee_by_id,
+    update_employee,
 )
 
 from asset_repository import (
@@ -261,6 +263,72 @@ def add_employee():
 
     return render_template(
         "add_employee.html",
+        error=error,
+    )
+
+@app.route("/employees/<int:employee_id>/edit", methods=["GET", "POST"])
+def edit_employee(employee_id):
+    employee = get_employee_by_id(employee_id)
+
+    if employee is None:
+        abort(404)
+
+    error = None
+
+    if request.method == "POST":
+        employee_code = request.form.get("employee_code", "").strip()
+        full_name = request.form.get("full_name", "").strip()
+        department = request.form.get("department", "").strip()
+
+        position = request.form.get("position", "").strip() or None
+        email = request.form.get("email", "").strip() or None
+        status = request.form.get("status", "").strip()
+
+        if not employee_code:
+            error = "Employee Code is required."
+
+        elif not full_name:
+            error = "Full Name is required."
+
+        elif not department:
+            error = "Department is required."
+
+        elif status not in ("Active", "Inactive"):
+            error = "Invalid employee status."
+
+        else:
+            try:
+                update_employee(
+                    employee_id,
+                    employee_code,
+                    full_name,
+                    department,
+                    position,
+                    email,
+                    status,
+                )
+
+                return redirect(url_for("employees"))
+
+            except mysql.connector.IntegrityError:
+                error = "Employee Code or Email already exists."
+
+            except mysql.connector.Error:
+                error = "Unable to update the employee. Please try again."
+
+        employee = {
+            "employee_id": employee_id,
+            "employee_code": employee_code,
+            "full_name": full_name,
+            "department": department,
+            "position": position,
+            "email": email,
+            "status": status,
+        }
+
+    return render_template(
+        "edit_employee.html",
+        employee=employee,
         error=error,
     )
 

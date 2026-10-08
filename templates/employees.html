@@ -71,6 +71,7 @@
                 <th>Position</th>
                 <th>Email</th>
                 <th>Status</th>
+                <th>edit</th>
             </tr>
 
         </thead>
@@ -88,13 +89,19 @@
                 <td>{{ employee.position or '-' }}</td>
                 <td>{{ employee.email or '-' }}</td>
                 <td>{{ employee.status }}</td>
+                
+                <td>
+    <a href="{{ url_for('edit_employee', employee_id=employee.employee_id) }}">
+        Edit
+    </a>
+</td>
 
             </tr>
 
             {% else %}
 
             <tr>
-                <td colspan="7">
+                <td colspan="8"
                     No employees found.
                 </td>
             </tr>
