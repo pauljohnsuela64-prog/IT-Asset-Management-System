@@ -24,6 +24,9 @@ from assignment_repository import (
     get_available_assets,
     get_active_employees,
     create_assignment,
+    get_all_assignments,
+    get_assignment_by_id,
+    return_assignment,
 )
 
 
@@ -408,6 +411,58 @@ def add_assignment():
         "add_assignment.html",
         assets=available_assets,
         employees=active_employees,
+        error=error,
+    )
+
+
+@app.route("/assignments")
+def assignments():
+    assignments = get_all_assignments()
+
+    return render_template(
+        "assignments.html",
+        assignments=assignments,
+    )
+
+@app.route(
+    "/assignments/<int:assignment_id>/return",
+    methods=["GET", "POST"],
+)
+def return_asset_route(assignment_id):
+    assignment = get_assignment_by_id(assignment_id)
+
+    if assignment is None:
+        abort(404)
+
+    if assignment["status"] != "Assigned":
+        return "This asset has already been returned.", 400
+
+    error = None
+
+    if request.method == "POST":
+        returned_date = request.form.get("returned_date", "").strip()
+
+        if not returned_date:
+            error = "Returned Date is required."
+
+        else:
+            try:
+                return_assignment(
+                    assignment_id,
+                    returned_date,
+                )
+
+                return redirect(url_for("assignments"))
+
+            except ValueError as error_message:
+                error = str(error_message)
+
+            except mysql.connector.Error:
+                error = "Unable to return the asset. Please try again."
+
+    return render_template(
+        "return_asset.html",
+        assignment=assignment,
         error=error,
     )
 

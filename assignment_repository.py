@@ -166,3 +166,168 @@ def create_assignment(
 
         if connection and connection.is_connected():
             connection.close()
+
+
+def get_all_assignments():
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+            SELECT
+                aa.assignment_id,
+                aa.assigned_date,
+                aa.returned_date,
+                aa.status,
+                aa.notes,
+
+                a.asset_tag,
+                a.device_name,
+                a.asset_type,
+
+                e.employee_code,
+                e.full_name,
+                e.department
+
+            FROM asset_assignments AS aa
+
+            INNER JOIN assets AS a
+                ON aa.asset_id = a.asset_id
+
+            INNER JOIN employees AS e
+                ON aa.employee_id = e.employee_id
+
+            ORDER BY aa.assignment_id DESC
+            """
+        )
+
+        return cursor.fetchall()
+
+    finally:
+        if cursor:
+            cursor.close()
+
+        if connection and connection.is_connected():
+            connection.close()
+
+
+def get_assignment_by_id(assignment_id):
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+            SELECT
+                aa.assignment_id,
+                aa.asset_id,
+                aa.employee_id,
+                aa.assigned_date,
+                aa.returned_date,
+                aa.status,
+                aa.notes,
+
+                a.asset_tag,
+                a.device_name,
+
+                e.employee_code,
+                e.full_name
+
+            FROM asset_assignments AS aa
+
+            INNER JOIN assets AS a
+                ON aa.asset_id = a.asset_id
+
+            INNER JOIN employees AS e
+                ON aa.employee_id = e.employee_id
+
+            WHERE aa.assignment_id = %s
+            """,
+            (assignment_id,),
+        )
+
+        return cursor.fetchone()
+
+    finally:
+        if cursor:
+            cursor.close()
+
+        if connection and connection.is_connected():
+            connection.close()
+
+
+def return_assignment(assignment_id, returned_date):
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        connection.start_transaction()
+
+        cursor.execute(
+            """
+            SELECT
+                asset_id,
+                status
+            FROM asset_assignments
+            WHERE assignment_id = %s
+            FOR UPDATE
+            """,
+            (assignment_id,),
+        )
+
+        assignment = cursor.fetchone()
+
+        if assignment is None:
+            raise ValueError("Assignment not found.")
+
+        if assignment["status"] != "Assigned":
+            raise ValueError("This asset has already been returned.")
+
+        asset_id = assignment["asset_id"]
+
+        cursor.execute(
+            """
+            UPDATE asset_assignments
+            SET returned_date = %s,
+                status = 'Returned'
+            WHERE assignment_id = %s
+            """,
+            (
+                returned_date,
+                assignment_id,
+            ),
+        )
+
+        cursor.execute(
+            """
+            UPDATE assets
+            SET status = 'Available'
+            WHERE asset_id = %s
+            """,
+            (asset_id,),
+        )
+
+        connection.commit()
+
+    except Exception:
+        if connection:
+            connection.rollback()
+
+        raise
+
+    finally:
+        if cursor:
+            cursor.close()
+
+        if connection and connection.is_connected():
+            connection.close()
