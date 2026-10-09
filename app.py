@@ -2,7 +2,7 @@ from datetime import date
 from flask import Flask, render_template, request, redirect, url_for, abort
 from flask import session
 from werkzeug.security import check_password_hash
-
+from functools import wraps
 import mysql.connector
 
 from user_repository import get_user_by_username
@@ -45,8 +45,19 @@ from assignment_repository import (
 app = Flask(__name__)
 app.secret_key = "change-this-to-a-random-secret-key"
 
+def login_required(view_function):
+    @wraps(view_function)
+    def wrapped_view(*args, **kwargs):
+        if "user_id" not in session:
+            return redirect(url_for("login"))
+
+        return view_function(*args, **kwargs)
+
+    return wrapped_view
+
 
 @app.route("/")
+@login_required
 def home():
     search_term = request.args.get("search", "").strip()
 
@@ -63,6 +74,7 @@ def home():
 
 
 @app.route("/assets/add", methods=["GET", "POST"])
+@login_required
 def add_asset():
     error = None
 
@@ -116,6 +128,7 @@ def add_asset():
     )
 
 @app.route("/assets/<int:asset_id>/edit", methods=["GET", "POST"])
+@login_required
 def edit_asset(asset_id):
     asset = get_asset_by_id(asset_id)
 
@@ -210,6 +223,7 @@ def edit_asset(asset_id):
 
 
 @app.route("/assets/<int:asset_id>/retire", methods=["GET", "POST"])
+@login_required
 def retire_asset_route(asset_id):
     asset = get_asset_by_id(asset_id)
 
@@ -246,6 +260,7 @@ def retire_asset_route(asset_id):
     )
 
 @app.route("/employees")
+@login_required
 def employees():
     search_term = request.args.get("search", "").strip()
 
@@ -261,6 +276,7 @@ def employees():
     )
 
 @app.route("/employees/add", methods=["GET", "POST"])
+@login_required
 def add_employee():
     error = None
 
@@ -305,6 +321,7 @@ def add_employee():
     )
 
 @app.route("/employees/<int:employee_id>/edit", methods=["GET", "POST"])
+@login_required
 def edit_employee(employee_id):
     employee = get_employee_by_id(employee_id)
 
@@ -372,6 +389,7 @@ def edit_employee(employee_id):
 
 
 @app.route("/employees/<int:employee_id>/deactivate", methods=["GET", "POST"])
+@login_required
 def deactivate_employee_route(employee_id):
     employee = get_employee_by_id(employee_id)
 
@@ -397,6 +415,7 @@ def deactivate_employee_route(employee_id):
     )
 
 @app.route("/assignments/add", methods=["GET", "POST"])
+@login_required
 def add_assignment():
     available_assets = get_available_assets()
     active_employees = get_active_employees()
@@ -450,6 +469,7 @@ def add_assignment():
 
 
 @app.route("/assignments")
+@login_required
 def assignments():
     assignments = get_all_assignments()
 
@@ -462,6 +482,7 @@ def assignments():
     "/assignments/<int:assignment_id>/return",
     methods=["GET", "POST"],
 )
+@login_required
 def return_asset_route(assignment_id):
     assignment = get_assignment_by_id(assignment_id)
 
@@ -527,6 +548,7 @@ def return_asset_route(assignment_id):
     )
 
 @app.route("/maintenance")
+@login_required
 def maintenance():
     records = get_all_maintenance_records()
 
@@ -536,6 +558,7 @@ def maintenance():
     )
 
 @app.route("/maintenance/add", methods=["GET", "POST"])
+@login_required
 def add_maintenance():
     assets = get_maintainable_assets()
     error = None
@@ -612,6 +635,7 @@ def add_maintenance():
     "/maintenance/<int:maintenance_id>/complete",
     methods=["GET", "POST"],
 )
+@login_required
 def complete_maintenance_route(maintenance_id):
     record = get_maintenance_by_id(maintenance_id)
 
