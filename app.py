@@ -3,6 +3,11 @@ from flask import Flask, render_template, request, redirect, url_for, abort
 
 import mysql.connector
 
+from maintenance_repository import (
+    get_all_maintenance_records,
+    get_maintainable_assets,
+    create_maintenance_record,
+)
 from employee_repository import (
     get_all_employees,
     create_employee,
@@ -513,5 +518,89 @@ def return_asset_route(assignment_id):
         assignment=assignment,
         error=error,
     )
+
+@app.route("/maintenance")
+def maintenance():
+    records = get_all_maintenance_records()
+
+    return render_template(
+        "maintenance.html",
+        records=records,
+    )
+
+@app.route("/maintenance/add", methods=["GET", "POST"])
+def add_maintenance():
+    assets = get_maintainable_assets()
+    error = None
+
+    if request.method == "POST":
+        asset_id = request.form.get("asset_id", "").strip()
+        maintenance_date = request.form.get("maintenance_date", "").strip()
+        maintenance_type = request.form.get("maintenance_type", "").strip()
+        issue_description = request.form.get("issue_description", "").strip()
+
+        technician_vendor = (
+            request.form.get("technician_vendor", "").strip() or None
+        )
+
+        cost = request.form.get("cost", "").strip() or "0"
+        notes = request.form.get("notes", "").strip() or None
+
+        if not asset_id:
+            error = "Please select an asset."
+
+        elif not maintenance_date:
+            error = "Maintenance Date is required."
+
+        elif not maintenance_type:
+            error = "Maintenance Type is required."
+
+        elif not issue_description:
+            error = "Issue Description is required."
+
+        else:
+            try:
+                maintenance_date_value = date.fromisoformat(
+                    maintenance_date
+                )
+
+                if maintenance_date_value > date.today():
+                    error = "Maintenance Date cannot be in the future."
+
+                else:
+                    cost_value = float(cost)
+
+                    if cost_value < 0:
+                        error = "Cost cannot be negative."
+
+                    else:
+                        create_maintenance_record(
+                            int(asset_id),
+                            maintenance_date_value,
+                            maintenance_type,
+                            issue_description,
+                            technician_vendor,
+                            cost_value,
+                            notes,
+                        )
+
+                        return redirect(url_for("maintenance"))
+
+            except ValueError as error_message:
+                error = str(error_message)
+
+            except mysql.connector.Error:
+                error = (
+                    "Unable to create the maintenance record. "
+                    "Please try again."
+                )
+
+    return render_template(
+        "add_maintenance.html",
+        assets=assets,
+        error=error,
+    )
+
+
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)

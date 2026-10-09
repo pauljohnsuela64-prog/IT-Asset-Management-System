@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Maintenance History</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>IT Asset Management System</h1>
+    <p>Maintenance History</p>
+
+    <div class="section-header">
+
+        <h2>Maintenance Records</h2>
+
+        <a href="{{ url_for('add_maintenance') }}">
+    <button type="button">
+        Add Maintenance Record
+    </button>
+</a>
+
+    </div>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>ID</th>
+                <th>Asset Tag</th>
+                <th>Device Name</th>
+                <th>Type</th>
+                <th>Maintenance Date</th>
+                <th>Maintenance Type</th>
+                <th>Issue</th>
+                <th>Technician / Vendor</th>
+                <th>Cost</th>
+                <th>Status</th>
+                <th>Completed Date</th>
+                <th>Action Taken</th>
+                <th>Notes</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for record in records %}
+
+            <tr>
+
+                <td>{{ record.maintenance_id }}</td>
+
+                <td>{{ record.asset_tag }}</td>
+
+                <td>{{ record.device_name }}</td>
+
+                <td>{{ record.asset_type }}</td>
+
+                <td>{{ record.maintenance_date }}</td>
+
+                <td>{{ record.maintenance_type }}</td>
+
+                <td>{{ record.issue_description }}</td>
+
+                <td>{{ record.technician_vendor or '-' }}</td>
+
+                <td>{{ record.cost }}</td>
+
+                <td>{{ record.status }}</td>
+
+                <td>{{ record.completed_date or '-' }}</td>
+
+                <td>{{ record.action_taken or '-' }}</td>
+
+                <td>{{ record.notes or '-' }}</td>
+
+            </tr>
+
+            {% else %}
+
+            <tr>
+                <td colspan="13">
+                    No maintenance records found.
+                </td>
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+    <br>
+
+    <a href="{{ url_for('home') }}">
+        Back to Assets
+    </a>
+
+</div>
+
+</body>
+</html>

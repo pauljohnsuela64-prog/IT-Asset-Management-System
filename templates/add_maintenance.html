@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Add Maintenance Record</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Add Maintenance Record</h1>
+
+    <p>
+        Record a maintenance issue for an available asset.
+    </p>
+
+    {% if error %}
+        <div class="error">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <form method="POST">
+
+        <label>Asset</label>
+
+        <select name="asset_id" required>
+
+            <option value="">
+                Select Asset
+            </option>
+
+            {% for asset in assets %}
+
+                <option value="{{ asset.asset_id }}">
+                    {{ asset.asset_tag }}
+                    -
+                    {{ asset.device_name }}
+                    -
+                    {{ asset.brand }}
+                    {{ asset.model or '' }}
+                </option>
+
+            {% endfor %}
+
+        </select>
+
+
+        <label>Maintenance Date</label>
+
+        <input
+            type="date"
+            name="maintenance_date"
+            required
+        >
+
+
+        <label>Maintenance Type</label>
+
+        <select name="maintenance_type" required>
+
+            <option value="">
+                Select Type
+            </option>
+
+            <option value="Repair">
+                Repair
+            </option>
+
+            <option value="Preventive Maintenance">
+                Preventive Maintenance
+            </option>
+
+            <option value="Inspection">
+                Inspection
+            </option>
+
+            <option value="Upgrade">
+                Upgrade
+            </option>
+
+            <option value="Other">
+                Other
+            </option>
+
+        </select>
+
+
+        <label>Issue Description</label>
+
+        <textarea
+            name="issue_description"
+            rows="4"
+            required
+        ></textarea>
+
+
+        <label>Technician / Vendor</label>
+
+        <input
+            type="text"
+            name="technician_vendor"
+        >
+
+
+        <label>Cost</label>
+
+        <input
+            type="number"
+            name="cost"
+            min="0"
+            step="0.01"
+            value="0.00"
+        >
+
+
+        <label>Notes</label>
+
+        <textarea
+            name="notes"
+            rows="4"
+        ></textarea>
+
+
+        <div class="form-actions">
+
+            <button type="submit">
+                Save Maintenance Record
+            </button>
+
+            <a href="{{ url_for('maintenance') }}">
+                Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+</html>
