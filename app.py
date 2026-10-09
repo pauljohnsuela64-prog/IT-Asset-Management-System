@@ -110,18 +110,13 @@ def edit_asset(asset_id):
     if asset is None:
         abort(404)
 
-    if asset["status"] == "Assigned":
-        return "Assigned assets must be returned before they can be retired.", 400
-
     if asset["status"] == "Retired":
         return "Retired assets cannot be edited.", 403
 
     error = None
 
-    
-
     if request.method == "POST":
-        asset_tag = request.form.get("asse  t_tag", "").strip()
+        asset_tag = request.form.get("asset_tag", "").strip()
         device_name = request.form.get("device_name", "").strip()
         asset_type = request.form.get("asset_type", "").strip()
         brand = request.form.get("brand", "").strip()
@@ -129,6 +124,9 @@ def edit_asset(asset_id):
         model = request.form.get("model", "").strip() or None
         serial_number = request.form.get("serial_number", "").strip() or None
         status = request.form.get("status", "").strip()
+
+        original_status = asset["status"]
+
         purchase_date = request.form.get("purchase_date", "").strip() or None
         notes = request.form.get("notes", "").strip() or None
 
@@ -144,11 +142,15 @@ def edit_asset(asset_id):
         elif not brand:
             error = "Brand is required."
 
-        elif status not in (
+        elif original_status == "Assigned" and status != "Assigned":
+            error = (
+                "Assigned assets must be returned "
+                "before their status can change."
+            )
+
+        elif original_status != "Assigned" and status not in (
             "Available",
-            "Assigned",
             "Under Maintenance",
-            "Retired",
         ):
             error = "Invalid asset status."
 
@@ -175,7 +177,6 @@ def edit_asset(asset_id):
             except mysql.connector.Error:
                 error = "Unable to update the asset. Please try again."
 
-        # Keep the entered values visible if validation fails.
         asset = {
             "asset_id": asset_id,
             "asset_tag": asset_tag,

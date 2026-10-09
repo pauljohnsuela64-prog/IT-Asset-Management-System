@@ -115,29 +115,38 @@
         >
 
         <label>Status</label>
-        <select name="status" required>
 
-            <option value="Available"
-                {% if asset.status == "Available" %}selected{% endif %}>
-                Available
-            </option>
+{% if asset.status == "Assigned" %}
 
-            <option value="Assigned"
-                {% if asset.status == "Assigned" %}selected{% endif %}>
-                Assigned
-            </option>
+    <input
+        type="text"
+        value="Assigned"
+        disabled
+    >
 
-            <option value="Under Maintenance"
-                {% if asset.status == "Under Maintenance" %}selected{% endif %}>
-                Under Maintenance
-            </option>
+    <input
+        type="hidden"
+        name="status"
+        value="Assigned"
+    >
 
-            <option value="Retired"
-                {% if asset.status == "Retired" %}selected{% endif %}>
-                Retired
-            </option>
+{% else %}
 
-        </select>
+    <select name="status" required>
+
+        <option value="Available"
+            {% if asset.status == "Available" %}selected{% endif %}>
+            Available
+        </option>
+
+        <option value="Under Maintenance"
+            {% if asset.status == "Under Maintenance" %}selected{% endif %}>
+            Under Maintenance
+        </option>
+
+    </select>
+
+{% endif %}
 
         <label>Purchase Date</label>
         <input
