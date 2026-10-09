@@ -1,7 +1,11 @@
 from datetime import date
 from flask import Flask, render_template, request, redirect, url_for, abort
+from flask import session
+from werkzeug.security import check_password_hash
 
 import mysql.connector
+
+from user_repository import get_user_by_username
 
 from maintenance_repository import (
     get_all_maintenance_records,
@@ -39,6 +43,7 @@ from assignment_repository import (
 
 
 app = Flask(__name__)
+app.secret_key = "change-this-to-a-random-secret-key"
 
 
 @app.route("/")
@@ -687,6 +692,55 @@ def complete_maintenance_route(maintenance_id):
         record=record,
         error=error,
     )
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    error = None
+
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "")
+
+        if not username:
+            error = "Username is required."
+
+        elif not password:
+            error = "Password is required."
+
+        else:
+            user = get_user_by_username(username)
+
+            if user is None:
+                error = "Invalid username or password."
+
+            elif user["status"] != "Active":
+                error = "This account is inactive."
+
+            elif not check_password_hash(
+                user["password_hash"],
+                password,
+            ):
+                error = "Invalid username or password."
+
+            else:
+                session["user_id"] = user["user_id"]
+                session["username"] = user["username"]
+                session["role"] = user["role"]
+
+                return redirect(url_for("home"))
+
+    return render_template(
+        "login.html",
+        error=error,
+    )
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+
+    return redirect(url_for("login"))
 
 
 if __name__ == "__main__":
