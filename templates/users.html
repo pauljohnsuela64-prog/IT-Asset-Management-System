@@ -46,6 +46,7 @@
                 <th>Role</th>
                 <th>Status</th>
                 <th>Created At</th>
+                <th>Actions</th>
             </tr>
 
         </thead>
@@ -60,12 +61,34 @@
                 <td>{{ user.role }}</td>
                 <td>{{ user.status }}</td>
                 <td>{{ user.created_at }}</td>
+                <td>
+
+    {% if user.user_id == session.get("user_id") %}
+
+        Current Account
+
+    {% elif user.status == "Active" %}
+
+        <a href="{{ url_for('change_user_status', user_id=user.user_id) }}">
+            Deactivate
+        </a>
+
+    {% else %}
+
+        <a href="{{ url_for('change_user_status', user_id=user.user_id) }}">
+            Activate
+        </a>
+
+    {% endif %}
+
+</td>
+
             </tr>
 
             {% else %}
 
             <tr>
-                <td colspan="5">
+                <td colspan="6">
                     No users found.
                 </td>
             </tr>

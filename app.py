@@ -16,6 +16,8 @@ from user_repository import (
     get_user_by_username,
     get_all_users,
     create_user,
+    get_user_by_id,
+    update_user_status,
 )
 
 
@@ -848,6 +850,52 @@ def add_user():
         "add_user.html",
         error=error,
     )
+
+
+@app.route(
+    "/users/<int:user_id>/status",
+    methods=["GET", "POST"],
+)
+@admin_required
+def change_user_status(user_id):
+    user = get_user_by_id(user_id)
+
+    if user is None:
+        abort(404)
+
+    # Prevent the logged-in Admin from disabling their own account.
+    if user_id == session.get("user_id"):
+        return "You cannot change the status of your own account.", 400
+
+    error = None
+
+    if request.method == "POST":
+        new_status = (
+            "Inactive"
+            if user["status"] == "Active"
+            else "Active"
+        )
+
+        try:
+            update_user_status(
+                user_id,
+                new_status,
+            )
+
+            return redirect(url_for("users"))
+
+        except ValueError as error_message:
+            error = str(error_message)
+
+        except mysql.connector.Error:
+            error = "Unable to change the user status."
+
+    return render_template(
+        "change_user_status.html",
+        user=user,
+        error=error,
+    )
+
 
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)

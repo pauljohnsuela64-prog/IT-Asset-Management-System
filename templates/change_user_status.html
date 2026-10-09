@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Change User Status</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+
+<div class="container">
+
+    {% if user.status == "Active" %}
+
+        <h1>Deactivate User</h1>
+
+        <p>
+            Are you sure you want to deactivate this account?
+        </p>
+
+    {% else %}
+
+        <h1>Activate User</h1>
+
+        <p>
+            Are you sure you want to reactivate this account?
+        </p>
+
+    {% endif %}
+
+
+    {% if error %}
+
+        <div class="error">
+            {{ error }}
+        </div>
+
+    {% endif %}
+
+
+    <p>
+        <strong>Username:</strong>
+        {{ user.username }}
+    </p>
+
+    <p>
+        <strong>Role:</strong>
+        {{ user.role }}
+    </p>
+
+    <p>
+        <strong>Current Status:</strong>
+        {{ user.status }}
+    </p>
+
+
+    <form method="POST">
+
+        {% if user.status == "Active" %}
+
+            <button type="submit">
+                Confirm Deactivate
+            </button>
+
+        {% else %}
+
+            <button type="submit">
+                Confirm Activate
+            </button>
+
+        {% endif %}
+
+        <a href="{{ url_for('users') }}">
+            Cancel
+        </a>
+
+    </form>
+
+</div>
+
+</body>
+</html>
