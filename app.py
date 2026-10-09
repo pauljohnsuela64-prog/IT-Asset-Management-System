@@ -12,6 +12,9 @@ from functools import wraps
 import mysql.connector
 
 
+from dashboard_repository import get_dashboard_stats
+
+
 from user_repository import (
     get_user_by_username,
     get_all_users,
@@ -141,7 +144,7 @@ def add_asset():
                     notes,
                 )
 
-                return redirect(url_for("home"))
+                return redirect(url_for("dashboard"))
 
             except mysql.connector.IntegrityError:
                 error = "Asset Tag or Serial Number already exists."
@@ -896,6 +899,16 @@ def change_user_status(user_id):
         error=error,
     )
 
+
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    stats = get_dashboard_stats()
+
+    return render_template(
+        "dashboard.html",
+        stats=stats,
+    )
 
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)

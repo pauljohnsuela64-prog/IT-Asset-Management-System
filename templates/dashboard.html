@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Dashboard</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>IT Asset Management System</h1>
+
+    <p>
+        Welcome, {{ session.get("username") }}!
+        Role: {{ session.get("role") }}
+    </p>
+
+    <h2>Dashboard</h2>
+
+
+    <div class="dashboard-grid">
+
+        <div class="dashboard-card">
+            <h3>Total Assets</h3>
+            <p>{{ stats.total_assets }}</p>
+        </div>
+
+        <div class="dashboard-card">
+            <h3>Available Assets</h3>
+            <p>{{ stats.available_assets }}</p>
+        </div>
+
+        <div class="dashboard-card">
+            <h3>Assigned Assets</h3>
+            <p>{{ stats.assigned_assets }}</p>
+        </div>
+
+        <div class="dashboard-card">
+            <h3>Under Maintenance</h3>
+            <p>{{ stats.maintenance_assets }}</p>
+        </div>
+
+        <div class="dashboard-card">
+            <h3>Retired Assets</h3>
+            <p>{{ stats.retired_assets }}</p>
+        </div>
+
+        <div class="dashboard-card">
+            <h3>Active Employees</h3>
+            <p>{{ stats.active_employees }}</p>
+        </div>
+
+        <div class="dashboard-card">
+            <h3>Active Assignments</h3>
+            <p>{{ stats.active_assignments }}</p>
+        </div>
+
+        <div class="dashboard-card">
+            <h3>Open Maintenance</h3>
+            <p>{{ stats.open_maintenance }}</p>
+        </div>
+
+    </div>
+
+
+    <div class="dashboard-navigation">
+
+        <a href="{{ url_for('home') }}">
+            Assets
+        </a>
+
+        <a href="{{ url_for('employees') }}">
+            Employees
+        </a>
+
+        <a href="{{ url_for('assignments') }}">
+            Assignment History
+        </a>
+
+        <a href="{{ url_for('maintenance') }}">
+            Maintenance History
+        </a>
+
+        {% if session.get("role") == "Admin" %}
+
+            <a href="{{ url_for('users') }}">
+                User Management
+            </a>
+
+        {% endif %}
+
+        <a href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>
