@@ -121,27 +121,35 @@
 
                 <td>
 
-                    {% if asset.status != "Retired" %}
+                    <td>
 
-                        <a href="{{ url_for('edit_asset', asset_id=asset.asset_id) }}">
-                            Edit
-                        </a>
+    {% if asset.status == "Retired" %}
 
-                        |
+        Retired
 
-                        <a href="{{ url_for('retire_asset_route', asset_id=asset.asset_id) }}">
-                            Retire
-                        </a>
+    {% elif asset.status == "Assigned" %}
 
-                    {% else %}
+        <a href="{{ url_for('edit_asset', asset_id=asset.asset_id) }}">
+            Edit
+        </a>
 
-                        Retired
+        | Assigned
 
-                    {% endif %}
+    {% else %}
 
-                </td>
+        <a href="{{ url_for('edit_asset', asset_id=asset.asset_id) }}">
+            Edit
+        </a>
 
-            </tr>
+        |
+
+        <a href="{{ url_for('retire_asset_route', asset_id=asset.asset_id) }}">
+            Retire
+        </a>
+
+    {% endif %}
+
+</td>
 
             {% else %}
 

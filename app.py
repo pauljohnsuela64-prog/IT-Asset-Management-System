@@ -1,3 +1,4 @@
+from datetime import date
 from flask import Flask, render_template, request, redirect, url_for, abort
 
 import mysql.connector
@@ -109,6 +110,9 @@ def edit_asset(asset_id):
     if asset is None:
         abort(404)
 
+    if asset["status"] == "Assigned":
+        return "Assigned assets must be returned before they can be retired.", 400
+
     if asset["status"] == "Retired":
         return "Retired assets cannot be edited.", 403
 
@@ -199,22 +203,33 @@ def retire_asset_route(asset_id):
     if asset is None:
         abort(404)
 
+    if asset["status"] == "Assigned":
+        return (
+            "Assigned assets must be returned before they can be retired.",
+            400,
+        )
+
+    if asset["status"] == "Retired":
+        return "This asset is already retired.", 400
+
+    error = None
+
     if request.method == "POST":
         try:
             retire_asset(asset_id)
+
             return redirect(url_for("home"))
 
+        except ValueError as error_message:
+            error = str(error_message)
+
         except mysql.connector.Error:
-            return render_template(
-                "retire_asset.html",
-                asset=asset,
-                error="Unable to retire the asset. Please try again.",
-            )
+            error = "Unable to retire the asset. Please try again."
 
     return render_template(
         "retire_asset.html",
         asset=asset,
-        error=None,
+        error=error,
     )
 
 @app.route("/employees")
@@ -392,14 +407,20 @@ def add_assignment():
 
         else:
             try:
-                create_assignment(
-                    int(asset_id),
-                    int(employee_id),
-                    assigned_date,
-                    notes,
-                )
+                assigned_date_value = date.fromisoformat(assigned_date)
 
-                return redirect(url_for("home"))
+                if assigned_date_value > date.today():
+                    error = "Assigned Date cannot be in the future."
+
+                else:
+                    create_assignment(
+                        int(asset_id),
+                        int(employee_id),
+                        assigned_date_value,
+                        notes,
+                    )
+
+                    return redirect(url_for("home"))
 
             except ValueError as error_message:
                 error = str(error_message)
@@ -447,24 +468,49 @@ def return_asset_route(assignment_id):
 
         else:
             try:
-                return_assignment(
-                    assignment_id,
-                    returned_date,
-                )
+                returned_date_value = date.fromisoformat(returned_date)
 
-                return redirect(url_for("assignments"))
+                assigned_date_value = assignment["assigned_date"]
 
-            except ValueError as error_message:
-                error = str(error_message)
+                if isinstance(assigned_date_value, str):
+                    assigned_date_value = date.fromisoformat(
+                        assigned_date_value
+                    )
 
-            except mysql.connector.Error:
-                error = "Unable to return the asset. Please try again."
+                if returned_date_value < assigned_date_value:
+                    error = (
+                        "Returned Date cannot be earlier "
+                        "than the Assigned Date."
+                    )
+
+                elif returned_date_value > date.today():
+                    error = "Returned Date cannot be in the future."
+
+                else:
+                    try:
+                        return_assignment(
+                            assignment_id,
+                            returned_date_value,
+                        )
+
+                        return redirect(url_for("assignments"))
+
+                    except ValueError as error_message:
+                        error = str(error_message)
+
+                    except mysql.connector.Error:
+                        error = (
+                            "Unable to return the asset. "
+                            "Please try again."
+                        )
+
+            except ValueError:
+                error = "Invalid Returned Date."
 
     return render_template(
         "return_asset.html",
         assignment=assignment,
         error=error,
     )
-
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)

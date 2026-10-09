@@ -244,7 +244,32 @@ def retire_asset(asset_id):
 
     try:
         connection = get_connection()
-        cursor = connection.cursor()
+        cursor = connection.cursor(dictionary=True)
+
+        connection.start_transaction()
+
+        cursor.execute(
+            """
+            SELECT status
+            FROM assets
+            WHERE asset_id = %s
+            FOR UPDATE
+            """,
+            (asset_id,),
+        )
+
+        asset = cursor.fetchone()
+
+        if asset is None:
+            raise ValueError("Asset not found.")
+
+        if asset["status"] == "Assigned":
+            raise ValueError(
+                "Assigned assets must be returned before they can be retired."
+            )
+
+        if asset["status"] == "Retired":
+            raise ValueError("This asset is already retired.")
 
         cursor.execute(
             """
