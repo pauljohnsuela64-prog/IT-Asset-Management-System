@@ -145,11 +145,15 @@
             Edit
         </a>
 
-        |
+        {% if session.get("role") == "Admin" %}
 
-        <a href="{{ url_for('retire_asset_route', asset_id=asset.asset_id) }}">
-            Retire
-        </a>
+            |
+
+            <a href="{{ url_for('retire_asset_route', asset_id=asset.asset_id) }}">
+                Retire
+            </a>
+
+        {% endif %}
 
     {% endif %}
 

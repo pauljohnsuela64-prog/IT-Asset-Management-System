@@ -55,6 +55,19 @@ def login_required(view_function):
 
     return wrapped_view
 
+def admin_required(view_function):
+    @wraps(view_function)
+    def wrapped_view(*args, **kwargs):
+        if "user_id" not in session:
+            return redirect(url_for("login"))
+
+        if session.get("role") != "Admin":
+            return "Admin access required.", 403
+
+        return view_function(*args, **kwargs)
+
+    return wrapped_view
+
 
 @app.route("/")
 @login_required
@@ -128,7 +141,7 @@ def add_asset():
     )
 
 @app.route("/assets/<int:asset_id>/edit", methods=["GET", "POST"])
-@login_required
+@admin_required
 def edit_asset(asset_id):
     asset = get_asset_by_id(asset_id)
 
@@ -223,7 +236,7 @@ def edit_asset(asset_id):
 
 
 @app.route("/assets/<int:asset_id>/retire", methods=["GET", "POST"])
-@login_required
+@admin_required
 def retire_asset_route(asset_id):
     asset = get_asset_by_id(asset_id)
 
@@ -389,7 +402,7 @@ def edit_employee(employee_id):
 
 
 @app.route("/employees/<int:employee_id>/deactivate", methods=["GET", "POST"])
-@login_required
+@admin_required
 def deactivate_employee_route(employee_id):
     employee = get_employee_by_id(employee_id)
 

@@ -96,7 +96,8 @@
         Edit
     </a>
 
-    {% if employee.status == "Active" %}
+    {% if employee.status == "Active"
+          and session.get("role") == "Admin" %}
 
         |
 
@@ -107,7 +108,6 @@
     {% endif %}
 
 </td>
-
             </tr>
 
             {% else %}
