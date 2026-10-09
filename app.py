@@ -1,11 +1,23 @@
 from datetime import date
 from flask import Flask, render_template, request, redirect, url_for, abort
 from flask import session
-from werkzeug.security import check_password_hash
+
+from werkzeug.security import (
+    check_password_hash,
+    generate_password_hash,
+)
 from functools import wraps
+
+
 import mysql.connector
 
-from user_repository import get_user_by_username
+
+from user_repository import (
+    get_user_by_username,
+    get_all_users,
+    create_user,
+)
+
 
 from maintenance_repository import (
     get_all_maintenance_records,
@@ -779,6 +791,63 @@ def logout():
 
     return redirect(url_for("login"))
 
+
+@app.route("/users")
+@admin_required
+def users():
+    users = get_all_users()
+
+    return render_template(
+        "users.html",
+        users=users,
+    )
+
+
+@app.route("/users/add", methods=["GET", "POST"])
+@admin_required
+def add_user():
+    error = None
+
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "")
+        confirm_password = request.form.get("confirm_password", "")
+        role = request.form.get("role", "").strip()
+
+        if not username:
+            error = "Username is required."
+
+        elif not password:
+            error = "Password is required."
+
+        elif password != confirm_password:
+            error = "Passwords do not match."
+
+        elif role not in ("Admin", "Staff"):
+            error = "Invalid user role."
+
+        else:
+            try:
+                password_hash = generate_password_hash(password)
+
+                create_user(
+                    username,
+                    password_hash,
+                    role,
+                )
+
+                return redirect(url_for("users"))
+
+            except mysql.connector.IntegrityError:
+                error = "Username already exists."
+
+            except mysql.connector.Error:
+                error = "Unable to create the user. Please try again."
+
+    return render_template(
+        "add_user.html",
+        error=error,
+    )
 
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)
