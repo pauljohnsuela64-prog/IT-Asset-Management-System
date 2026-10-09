@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Complete Maintenance</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Complete Maintenance</h1>
+
+    <p>
+        Finish the maintenance record and return the asset to Available.
+    </p>
+
+    {% if error %}
+        <div class="error">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <div class="maintenance-details">
+
+        <p>
+            <strong>Asset:</strong>
+            {{ record.asset_tag }} - {{ record.device_name }}
+        </p>
+
+        <p>
+            <strong>Maintenance Type:</strong>
+            {{ record.maintenance_type }}
+        </p>
+
+        <p>
+            <strong>Maintenance Date:</strong>
+            {{ record.maintenance_date }}
+        </p>
+
+        <p>
+            <strong>Issue:</strong>
+            {{ record.issue_description }}
+        </p>
+
+        <p>
+            <strong>Current Status:</strong>
+            {{ record.status }}
+        </p>
+
+    </div>
+
+    <form method="POST">
+
+        <label>Completed Date</label>
+
+        <input
+            type="date"
+            name="completed_date"
+            min="{{ record.maintenance_date }}"
+            required
+        >
+
+        <label>Action Taken</label>
+
+        <textarea
+            name="action_taken"
+            rows="4"
+            required
+        ></textarea>
+
+        <label>Technician / Vendor</label>
+
+        <input
+            type="text"
+            name="technician_vendor"
+            value="{{ record.technician_vendor or '' }}"
+        >
+
+        <label>Final Cost</label>
+
+        <input
+            type="number"
+            name="cost"
+            min="0"
+            step="0.01"
+            value="{{ record.cost or '0.00' }}"
+        >
+
+        <label>Notes</label>
+
+        <textarea
+            name="notes"
+            rows="4"
+        >{{ record.notes or '' }}</textarea>
+
+        <div class="form-actions">
+
+            <button type="submit">
+                Complete Maintenance
+            </button>
+
+            <a href="{{ url_for('maintenance') }}">
+                Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+</html>

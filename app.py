@@ -7,6 +7,8 @@ from maintenance_repository import (
     get_all_maintenance_records,
     get_maintainable_assets,
     create_maintenance_record,
+    get_maintenance_by_id,
+    complete_maintenance,
 )
 from employee_repository import (
     get_all_employees,
@@ -598,6 +600,91 @@ def add_maintenance():
     return render_template(
         "add_maintenance.html",
         assets=assets,
+        error=error,
+    )
+
+@app.route(
+    "/maintenance/<int:maintenance_id>/complete",
+    methods=["GET", "POST"],
+)
+def complete_maintenance_route(maintenance_id):
+    record = get_maintenance_by_id(maintenance_id)
+
+    if record is None:
+        abort(404)
+
+    if record["status"] == "Completed":
+        return "This maintenance record is already completed.", 400
+
+    error = None
+
+    if request.method == "POST":
+        completed_date = request.form.get("completed_date", "").strip()
+        action_taken = request.form.get("action_taken", "").strip()
+
+        technician_vendor = (
+            request.form.get("technician_vendor", "").strip() or None
+        )
+
+        cost = request.form.get("cost", "").strip() or "0"
+        notes = request.form.get("notes", "").strip() or None
+
+        if not completed_date:
+            error = "Completed Date is required."
+
+        elif not action_taken:
+            error = "Action Taken is required."
+
+        else:
+            try:
+                completed_date_value = date.fromisoformat(completed_date)
+
+                maintenance_date_value = record["maintenance_date"]
+
+                if isinstance(maintenance_date_value, str):
+                    maintenance_date_value = date.fromisoformat(
+                        maintenance_date_value
+                    )
+
+                if completed_date_value < maintenance_date_value:
+                    error = (
+                        "Completed Date cannot be earlier "
+                        "than the Maintenance Date."
+                    )
+
+                elif completed_date_value > date.today():
+                    error = "Completed Date cannot be in the future."
+
+                else:
+                    cost_value = float(cost)
+
+                    if cost_value < 0:
+                        error = "Cost cannot be negative."
+
+                    else:
+                        complete_maintenance(
+                            maintenance_id,
+                            completed_date_value,
+                            action_taken,
+                            technician_vendor,
+                            cost_value,
+                            notes,
+                        )
+
+                        return redirect(url_for("maintenance"))
+
+            except ValueError as error_message:
+                error = str(error_message)
+
+            except mysql.connector.Error:
+                error = (
+                    "Unable to complete maintenance. "
+                    "Please try again."
+                )
+
+    return render_template(
+        "complete_maintenance.html",
+        record=record,
         error=error,
     )
 

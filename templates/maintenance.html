@@ -54,6 +54,7 @@
                 <th>Completed Date</th>
                 <th>Action Taken</th>
                 <th>Notes</th>
+                <th>Actions</th>
             </tr>
 
         </thead>
@@ -90,12 +91,28 @@
 
                 <td>{{ record.notes or '-' }}</td>
 
+                <td>
+
+    {% if record.status != "Completed" %}
+
+        <a href="{{ url_for('complete_maintenance_route', maintenance_id=record.maintenance_id) }}">
+            Complete
+        </a>
+
+    {% else %}
+
+        Completed
+
+    {% endif %}
+
+</td>
+
             </tr>
 
             {% else %}
 
             <tr>
-                <td colspan="13">
+                <td colspan="14">
                     No maintenance records found.
                 </td>
             </tr>
