@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from flask import Flask, render_template, request, redirect, url_for, abort
 from flask import session
 
@@ -15,11 +15,15 @@ from io import BytesIO
 
 from flask import send_file
 from openpyxl import Workbook
-from openpyxl.styles import Font
+from openpyxl.styles import Font, PatternFill, Alignment
+from openpyxl.utils import get_column_letter
 
-from export_repository import get_assets_for_export
-
-
+from export_repository import (
+    get_assets_for_export,
+    get_employees_for_export,
+    get_assignments_for_export,
+    get_maintenance_for_export,
+)
 from report_repository import (
     get_asset_status_report,
     get_asset_type_report,
@@ -938,86 +942,247 @@ def reports():
     )
 
 
-@app.route("/reports/export/assets")
+@app.route("/reports/export")
 @login_required
-def export_assets():
+def export_full_report():
     assets = get_assets_for_export()
+    employees = get_employees_for_export()
+    assignments = get_assignments_for_export()
+    maintenance = get_maintenance_for_export()
 
     workbook = Workbook()
-    worksheet = workbook.active
-    worksheet.title = "Assets"
 
-    headers = [
-        "ID",
-        "Asset Tag",
-        "Device Name",
-        "Asset Type",
-        "Brand",
-        "Model",
-        "Serial Number",
-        "Status",
-        "Purchase Date",
-        "Notes",
-        "Created At",
-    ]
+    # Remove the default sheet.
+    default_sheet = workbook.active
+    workbook.remove(default_sheet)
 
-    worksheet.append(headers)
+    header_fill = PatternFill(
+        fill_type="solid",
+        fgColor="1F4E78",
+    )
 
-    # Make header row bold.
-    for cell in worksheet[1]:
-        cell.font = Font(bold=True)
+    header_font = Font(
+        bold=True,
+        color="FFFFFF",
+    )
 
-    for asset in assets:
-        worksheet.append(
-            [
-                asset["asset_id"],
-                asset["asset_tag"],
-                asset["device_name"],
-                asset["asset_type"],
-                asset["brand"],
-                asset["model"],
-                asset["serial_number"],
-                asset["status"],
-                asset["purchase_date"],
-                asset["notes"],
-                asset["created_at"],
-            ]
-        )
+    def safe_value(value):
+        # Convert dates to text so even unusual test dates
+        # such as year 0225 will display instead of #######.
+        if isinstance(value, datetime):
+            return value.strftime("%Y-%m-%d %H:%M:%S")
 
-    # Make columns easier to read.
-    column_widths = {
-        "A": 10,
-        "B": 18,
-        "C": 25,
-        "D": 20,
-        "E": 18,
-        "F": 22,
-        "G": 22,
-        "H": 20,
-        "I": 18,
-        "J": 35,
-        "K": 22,
-    }
+        if isinstance(value, date):
+            return value.isoformat()
 
-    for column, width in column_widths.items():
-        worksheet.column_dimensions[column].width = width
+        return value
+
+    def setup_sheet(
+        title,
+        headers,
+        rows,
+        keys,
+    ):
+        worksheet = workbook.create_sheet(title)
+
+        worksheet.append(headers)
+
+        for cell in worksheet[1]:
+            cell.font = header_font
+            cell.fill = header_fill
+            cell.alignment = Alignment(
+                horizontal="center",
+                vertical="center",
+            )
+
+        for row in rows:
+            worksheet.append(
+                [
+                    safe_value(row[key])
+                    for key in keys
+                ]
+            )
+
+        worksheet.freeze_panes = "A2"
+        worksheet.auto_filter.ref = worksheet.dimensions
+
+        # Automatically size the columns.
+        for column_cells in worksheet.columns:
+            max_length = 0
+
+            column_letter = get_column_letter(
+                column_cells[0].column
+            )
+
+            for cell in column_cells:
+                value = cell.value
+
+                if value is None:
+                    continue
+
+                max_length = max(
+                    max_length,
+                    len(str(value)),
+                )
+
+            worksheet.column_dimensions[
+                column_letter
+            ].width = min(max_length + 2, 40)
+
+        return worksheet
+
+    # -------------------------
+    # Assets
+    # -------------------------
+
+    setup_sheet(
+        "Assets",
+        [
+            "ID",
+            "Asset Tag",
+            "Device Name",
+            "Asset Type",
+            "Brand",
+            "Model",
+            "Serial Number",
+            "Status",
+            "Purchase Date",
+            "Notes",
+            "Created At",
+        ],
+        assets,
+        [
+            "asset_id",
+            "asset_tag",
+            "device_name",
+            "asset_type",
+            "brand",
+            "model",
+            "serial_number",
+            "status",
+            "purchase_date",
+            "notes",
+            "created_at",
+        ],
+    )
+
+    # -------------------------
+    # Employees
+    # -------------------------
+
+    setup_sheet(
+        "Employees",
+        [
+            "ID",
+            "Employee Code",
+            "Full Name",
+            "Department",
+            "Position",
+            "Email",
+            "Status",
+            "Created At",
+        ],
+        employees,
+        [
+            "employee_id",
+            "employee_code",
+            "full_name",
+            "department",
+            "position",
+            "email",
+            "status",
+            "created_at",
+        ],
+    )
+
+    # -------------------------
+    # Assignments
+    # -------------------------
+
+    setup_sheet(
+        "Assignments",
+        [
+            "ID",
+            "Asset Tag",
+            "Device Name",
+            "Employee Code",
+            "Employee",
+            "Department",
+            "Assigned Date",
+            "Returned Date",
+            "Status",
+            "Notes",
+        ],
+        assignments,
+        [
+            "assignment_id",
+            "asset_tag",
+            "device_name",
+            "employee_code",
+            "full_name",
+            "department",
+            "assigned_date",
+            "returned_date",
+            "status",
+            "notes",
+        ],
+    )
+
+    # -------------------------
+    # Maintenance
+    # -------------------------
+
+    maintenance_sheet = setup_sheet(
+        "Maintenance",
+        [
+            "ID",
+            "Asset Tag",
+            "Device Name",
+            "Maintenance Date",
+            "Type",
+            "Issue",
+            "Action Taken",
+            "Technician / Vendor",
+            "Cost",
+            "Status",
+            "Completed Date",
+            "Notes",
+        ],
+        maintenance,
+        [
+            "maintenance_id",
+            "asset_tag",
+            "device_name",
+            "maintenance_date",
+            "maintenance_type",
+            "issue_description",
+            "action_taken",
+            "technician_vendor",
+            "cost",
+            "status",
+            "completed_date",
+            "notes",
+        ],
+    )
+
+    # Format Maintenance Cost column.
+    for cell in maintenance_sheet["I"][1:]:
+        cell.number_format = '₱#,##0.00'
 
     output = BytesIO()
 
     workbook.save(output)
-
     output.seek(0)
 
     return send_file(
         output,
         as_attachment=True,
-        download_name="IT_Asset_Report.xlsx",
+        download_name="IT_Asset_Management_Report.xlsx",
         mimetype=(
             "application/vnd.openxmlformats-officedocument."
             "spreadsheetml.sheet"
         ),
     )
-
 
 @app.route(
     "/assets/<int:asset_id>/delete",
@@ -1030,14 +1195,12 @@ def delete_asset_route(asset_id):
     if asset is None:
         abort(404)
 
-    # Only retired assets can be permanently deleted.
     if asset["status"] != "Retired":
         return "Only retired assets can be permanently deleted.", 400
 
     has_history = asset_has_history(asset_id)
 
     if request.method == "POST":
-        # Check again before deleting.
         if has_history:
             return (
                 "This asset has assignment or maintenance history "
@@ -1047,7 +1210,6 @@ def delete_asset_route(asset_id):
 
         try:
             delete_asset(asset_id)
-
             return redirect(url_for("home"))
 
         except mysql.connector.Error:
@@ -1064,6 +1226,7 @@ def delete_asset_route(asset_id):
         has_history=has_history,
         error=None,
     )
+
 
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)
