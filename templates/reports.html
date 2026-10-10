@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Reports</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>IT Asset Management System</h1>
+    <p>Reports</p>
+
+    <a href="{{ url_for('export_assets') }}">
+    <button type="button">
+        Export Assets to Excel
+    </button>
+    </a>
+
+    <h2>Assets by Status</h2>
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Status</th>
+                <th>Total Assets</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for row in status_report %}
+
+            <tr>
+                <td>{{ row.status }}</td>
+                <td>{{ row.total }}</td>
+            </tr>
+
+            {% else %}
+
+            <tr>
+                <td colspan="2">
+                    No asset status data found.
+                </td>
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+    <h2>Assets by Type</h2>
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Asset Type</th>
+                <th>Total Assets</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for row in type_report %}
+
+            <tr>
+                <td>{{ row.asset_type }}</td>
+                <td>{{ row.total }}</td>
+            </tr>
+
+            {% else %}
+
+            <tr>
+                <td colspan="2">
+                    No asset type data found.
+                </td>
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+    <br>
+
+    <a href="{{ url_for('dashboard') }}">
+        Back to Dashboard
+    </a>
+
+    
+
+</div>
+
+</body>
+</html>

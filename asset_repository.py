@@ -296,3 +296,77 @@ def retire_asset(asset_id):
 
         if connection and connection.is_connected():
             connection.close()
+
+
+def asset_has_history(asset_id):
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+            SELECT COUNT(*) AS count
+            FROM asset_assignments
+            WHERE asset_id = %s
+            """,
+            (asset_id,),
+        )
+
+        assignment_count = cursor.fetchone()["count"]
+
+        cursor.execute(
+            """
+            SELECT COUNT(*) AS count
+            FROM maintenance_records
+            WHERE asset_id = %s
+            """,
+            (asset_id,),
+        )
+
+        maintenance_count = cursor.fetchone()["count"]
+
+        return assignment_count > 0 or maintenance_count > 0
+
+    finally:
+        if cursor:
+            cursor.close()
+
+        if connection and connection.is_connected():
+            connection.close()
+
+
+def delete_asset(asset_id):
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """
+            DELETE FROM assets
+            WHERE asset_id = %s
+            """,
+            (asset_id,),
+        )
+
+        connection.commit()
+
+        return cursor.rowcount
+
+    except Exception:
+        if connection:
+            connection.rollback()
+
+        raise
+
+    finally:
+        if cursor:
+            cursor.close()
+
+        if connection and connection.is_connected():
+            connection.close()

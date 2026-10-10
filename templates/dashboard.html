@@ -94,11 +94,15 @@
             Maintenance History
         </a>
 
+        <a href="{{ url_for('reports') }}">
+            Reports
+        </a>
+
         {% if session.get("role") == "Admin" %}
 
-            <a href="{{ url_for('users') }}">
-                User Management
-            </a>
+        <a href="{{ url_for('users') }}">
+            User Management
+         </a>
 
         {% endif %}
 

@@ -101,75 +101,75 @@
 
         <tbody>
 
-            {% for asset in assets %}
+    {% for asset in assets %}
 
-            <tr>
+    <tr>
+        <td>{{ asset.asset_id }}</td>
+        <td>{{ asset.asset_tag }}</td>
+        <td>{{ asset.device_name }}</td>
+        <td>{{ asset.asset_type }}</td>
+        <td>{{ asset.brand }}</td>
+        <td>{{ asset.model or '-' }}</td>
+        <td>{{ asset.serial_number or '-' }}</td>
+        <td>{{ asset.status }}</td>
+        <td>{{ asset.purchase_date or '-' }}</td>
 
-                <td>{{ asset.asset_id }}</td>
+        <td>
 
-                <td>{{ asset.asset_tag }}</td>
+            {% if asset.status == "Retired" %}
 
-                <td>{{ asset.device_name }}</td>
+    Retired
 
-                <td>{{ asset.asset_type }}</td>
+    {% if session.get("role") == "Admin" %}
 
-                <td>{{ asset.brand }}</td>
+        |
 
-                <td>{{ asset.model or '-' }}</td>
-
-                <td>{{ asset.serial_number or '-' }}</td>
-
-                <td>{{ asset.status }}</td>
-
-                <td>{{ asset.purchase_date or '-' }}</td>
-
-                <td>
-
-                    <td>
-
-    {% if asset.status == "Retired" %}
-
-        Retired
-
-    {% elif asset.status == "Assigned" %}
-
-        <a href="{{ url_for('edit_asset', asset_id=asset.asset_id) }}">
-            Edit
+        <a href="{{ url_for('delete_asset_route', asset_id=asset.asset_id) }}">
+            Delete
         </a>
-
-        | Assigned
-
-    {% else %}
-
-        <a href="{{ url_for('edit_asset', asset_id=asset.asset_id) }}">
-            Edit
-        </a>
-
-        {% if session.get("role") == "Admin" %}
-
-            |
-
-            <a href="{{ url_for('retire_asset_route', asset_id=asset.asset_id) }}">
-                Retire
-            </a>
-
-        {% endif %}
 
     {% endif %}
 
-</td>
+            {% elif asset.status == "Assigned" %}
+
+                <a href="{{ url_for('edit_asset', asset_id=asset.asset_id) }}">
+                    Edit
+                </a>
+
+                | Assigned
 
             {% else %}
 
-            <tr>
-                <td colspan="10">
-                    No assets found.
-                </td>
-            </tr>
+                <a href="{{ url_for('edit_asset', asset_id=asset.asset_id) }}">
+                    Edit
+                </a>
 
-            {% endfor %}
+                {% if session.get("role") == "Admin" %}
 
-        </tbody>
+                    |
+
+                    <a href="{{ url_for('retire_asset_route', asset_id=asset.asset_id) }}">
+                        Retire
+                    </a>
+
+                {% endif %}
+
+            {% endif %}
+
+        </td>
+    </tr>
+
+    {% else %}
+
+    <tr>
+        <td colspan="10">
+            No assets found.
+        </td>
+    </tr>
+
+    {% endfor %}
+
+</tbody>
 
     </table>
 

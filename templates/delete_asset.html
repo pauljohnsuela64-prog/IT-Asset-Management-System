@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Delete Asset</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Permanently Delete Asset</h1>
+
+    <p>
+        This action permanently removes the asset from MySQL.
+    </p>
+
+    {% if error %}
+        <div class="error">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <p>
+        <strong>Asset Tag:</strong>
+        {{ asset.asset_tag }}
+    </p>
+
+    <p>
+        <strong>Device Name:</strong>
+        {{ asset.device_name }}
+    </p>
+
+    <p>
+        <strong>Status:</strong>
+        {{ asset.status }}
+    </p>
+
+
+    {% if has_history %}
+
+        <div class="error">
+            This asset has assignment or maintenance history
+            and cannot be permanently deleted.
+        </div>
+
+        <a href="{{ url_for('home') }}">
+            Back to Assets
+        </a>
+
+    {% else %}
+
+        <p>
+            <strong>
+                Warning: This action cannot be undone.
+            </strong>
+        </p>
+
+        <form method="POST">
+
+            <button type="submit">
+                Confirm Permanent Delete
+            </button>
+
+            <a href="{{ url_for('home') }}">
+                Cancel
+            </a>
+
+        </form>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>

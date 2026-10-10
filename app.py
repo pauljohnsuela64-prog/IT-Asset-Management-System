@@ -11,6 +11,19 @@ from functools import wraps
 
 import mysql.connector
 
+from io import BytesIO
+
+from flask import send_file
+from openpyxl import Workbook
+from openpyxl.styles import Font
+
+from export_repository import get_assets_for_export
+
+
+from report_repository import (
+    get_asset_status_report,
+    get_asset_type_report,
+)
 
 from dashboard_repository import get_dashboard_stats
 
@@ -47,6 +60,8 @@ from asset_repository import (
     get_asset_by_id,
     update_asset,
     retire_asset,
+    asset_has_history,
+    delete_asset,
 )
 
 from assignment_repository import (
@@ -908,6 +923,146 @@ def dashboard():
     return render_template(
         "dashboard.html",
         stats=stats,
+    )
+
+@app.route("/reports")
+@login_required
+def reports():
+    status_report = get_asset_status_report()
+    type_report = get_asset_type_report()
+
+    return render_template(
+        "reports.html",
+        status_report=status_report,
+        type_report=type_report,
+    )
+
+
+@app.route("/reports/export/assets")
+@login_required
+def export_assets():
+    assets = get_assets_for_export()
+
+    workbook = Workbook()
+    worksheet = workbook.active
+    worksheet.title = "Assets"
+
+    headers = [
+        "ID",
+        "Asset Tag",
+        "Device Name",
+        "Asset Type",
+        "Brand",
+        "Model",
+        "Serial Number",
+        "Status",
+        "Purchase Date",
+        "Notes",
+        "Created At",
+    ]
+
+    worksheet.append(headers)
+
+    # Make header row bold.
+    for cell in worksheet[1]:
+        cell.font = Font(bold=True)
+
+    for asset in assets:
+        worksheet.append(
+            [
+                asset["asset_id"],
+                asset["asset_tag"],
+                asset["device_name"],
+                asset["asset_type"],
+                asset["brand"],
+                asset["model"],
+                asset["serial_number"],
+                asset["status"],
+                asset["purchase_date"],
+                asset["notes"],
+                asset["created_at"],
+            ]
+        )
+
+    # Make columns easier to read.
+    column_widths = {
+        "A": 10,
+        "B": 18,
+        "C": 25,
+        "D": 20,
+        "E": 18,
+        "F": 22,
+        "G": 22,
+        "H": 20,
+        "I": 18,
+        "J": 35,
+        "K": 22,
+    }
+
+    for column, width in column_widths.items():
+        worksheet.column_dimensions[column].width = width
+
+    output = BytesIO()
+
+    workbook.save(output)
+
+    output.seek(0)
+
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name="IT_Asset_Report.xlsx",
+        mimetype=(
+            "application/vnd.openxmlformats-officedocument."
+            "spreadsheetml.sheet"
+        ),
+    )
+
+
+@app.route(
+    "/assets/<int:asset_id>/delete",
+    methods=["GET", "POST"],
+)
+@admin_required
+def delete_asset_route(asset_id):
+    asset = get_asset_by_id(asset_id)
+
+    if asset is None:
+        abort(404)
+
+    # Only retired assets can be permanently deleted.
+    if asset["status"] != "Retired":
+        return "Only retired assets can be permanently deleted.", 400
+
+    has_history = asset_has_history(asset_id)
+
+    if request.method == "POST":
+        # Check again before deleting.
+        if has_history:
+            return (
+                "This asset has assignment or maintenance history "
+                "and cannot be permanently deleted.",
+                400,
+            )
+
+        try:
+            delete_asset(asset_id)
+
+            return redirect(url_for("home"))
+
+        except mysql.connector.Error:
+            return render_template(
+                "delete_asset.html",
+                asset=asset,
+                has_history=has_history,
+                error="Unable to delete the asset. Please try again.",
+            )
+
+    return render_template(
+        "delete_asset.html",
+        asset=asset,
+        has_history=has_history,
+        error=None,
     )
 
 if __name__ == "__main__":
