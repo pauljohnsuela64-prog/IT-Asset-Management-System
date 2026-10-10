@@ -1,93 +1,55 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
+{% set deactivating = user.status == 'Active' %}
+{% set action_label = 'Deactivate' if deactivating else 'Activate' %}
+{% set action_style = 'danger' if deactivating else 'success' %}
 
-<head>
-    <meta charset="UTF-8">
+{% block title %}{{ action_label }} User{% endblock %}
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>Change User Status</title>
-
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}"
-    >
-</head>
-
-<body>
-
-<div class="container">
-
-    {% if user.status == "Active" %}
-
-        <h1>Deactivate User</h1>
-
-        <p>
-            Are you sure you want to deactivate this account?
-        </p>
-
-    {% else %}
-
-        <h1>Activate User</h1>
-
-        <p>
-            Are you sure you want to reactivate this account?
-        </p>
-
-    {% endif %}
-
-
-    {% if error %}
-
-        <div class="error">
-            {{ error }}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="fw-bold mb-1">{{ action_label }} User</h1>
+                <p class="text-muted mb-0">Confirm the account status change.</p>
+            </div>
+            <a href="{{ url_for('users') }}" class="btn btn-outline-secondary">Back to User Management</a>
         </div>
 
-    {% endif %}
-
-
-    <p>
-        <strong>Username:</strong>
-        {{ user.username }}
-    </p>
-
-    <p>
-        <strong>Role:</strong>
-        {{ user.role }}
-    </p>
-
-    <p>
-        <strong>Current Status:</strong>
-        {{ user.status }}
-    </p>
-
-
-    <form method="POST">
-
-        {% if user.status == "Active" %}
-
-            <button type="submit">
-                Confirm Deactivate
-            </button>
-
-        {% else %}
-
-            <button type="submit">
-                Confirm Activate
-            </button>
-
+        {% if error %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
         {% endif %}
 
-        <a href="{{ url_for('users') }}">
-            Cancel
-        </a>
+        <div class="card shadow-sm border-{{ action_style }}">
+            <div class="card-header text-bg-{{ action_style }}">{{ action_label }} Account</div>
+            <div class="card-body p-4">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Username</dt>
+                    <dd class="col-sm-8">{{ user.username }}</dd>
+                    <dt class="col-sm-4">Role</dt>
+                    <dd class="col-sm-8">{{ user.role }}</dd>
+                    <dt class="col-sm-4">Current Status</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge {{ 'text-bg-success' if deactivating else 'text-bg-secondary' }}">{{ user.status }}</span>
+                    </dd>
+                </dl>
 
-    </form>
+                <div class="alert alert-{{ action_style }} mt-3" role="alert">
+                    {% if deactivating %}
+                        Are you sure you want to deactivate this account? The user will no longer be able to log in.
+                    {% else %}
+                        Are you sure you want to activate this account? The user will be able to log in again.
+                    {% endif %}
+                </div>
 
+                <form id="change-user-status-form" method="POST" action="{{ url_for('change_user_status', user_id=user.user_id) }}">
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('users') }}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" form="change-user-status-form" class="btn btn-{{ action_style }}">Confirm {{ action_label }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
-
-</body>
-</html>
+{% endblock %}
