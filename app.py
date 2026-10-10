@@ -1,4 +1,7 @@
 from datetime import date, datetime
+import os
+from pathlib import Path
+from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, abort
 from flask import session
 
@@ -79,7 +82,13 @@ from assignment_repository import (
 
 
 app = Flask(__name__)
-app.secret_key = "change-this-to-a-random-secret-key"
+load_dotenv(Path(__file__).resolve().with_name(".env"))
+app.secret_key = os.getenv("SECRET_KEY")
+if not app.secret_key or app.secret_key in (
+    "replace_with_a_long_random_secret_key",
+    "change-this-to-a-random-secret-key",
+):
+    raise RuntimeError("Set SECRET_KEY to a long random value in .env before starting the app.")
 
 def login_required(view_function):
     @wraps(view_function)
@@ -1229,4 +1238,4 @@ def delete_asset_route(asset_id):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, use_reloader=False)
+    app.run(debug=os.getenv("FLASK_DEBUG", "0") == "1", use_reloader=False)

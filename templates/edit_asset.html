@@ -35,7 +35,7 @@ Edit Asset
 
         {% if error %}
 
-            <div class="alert alert-danger">
+            <div class="alert alert-danger" role="alert">
                 {{ error }}
             </div>
 
@@ -46,19 +46,20 @@ Edit Asset
 
             <div class="card-body p-4">
 
-                <form method="POST">
+                <form id="edit-asset-form" method="POST" action="{{ url_for('edit_asset', asset_id=asset.asset_id) }}">
 
                     <div class="row g-3">
 
                         <div class="col-md-6">
 
-                            <label class="form-label">
+                            <label class="form-label" for="asset_tag">
                                 Asset Tag
                             </label>
 
                             <input
                                 type="text"
                                 name="asset_tag"
+                                id="asset_tag"
                                 class="form-control"
                                 value="{{ asset.asset_tag }}"
                                 required
@@ -69,13 +70,14 @@ Edit Asset
 
                         <div class="col-md-6">
 
-                            <label class="form-label">
+                            <label class="form-label" for="device_name">
                                 Device Name
                             </label>
 
                             <input
                                 type="text"
                                 name="device_name"
+                                id="device_name"
                                 class="form-control"
                                 value="{{ asset.device_name }}"
                                 required
@@ -86,12 +88,13 @@ Edit Asset
 
                         <div class="col-md-6">
 
-                            <label class="form-label">
+                            <label class="form-label" for="asset_type">
                                 Asset Type
                             </label>
 
                             <select
                                 name="asset_type"
+                                id="asset_type"
                                 class="form-select"
                                 required
                             >
@@ -143,13 +146,14 @@ Edit Asset
 
                         <div class="col-md-6">
 
-                            <label class="form-label">
+                            <label class="form-label" for="brand">
                                 Brand
                             </label>
 
                             <input
                                 type="text"
                                 name="brand"
+                                id="brand"
                                 class="form-control"
                                 value="{{ asset.brand }}"
                                 required
@@ -160,13 +164,14 @@ Edit Asset
 
                         <div class="col-md-6">
 
-                            <label class="form-label">
+                            <label class="form-label" for="model">
                                 Model
                             </label>
 
                             <input
                                 type="text"
                                 name="model"
+                                id="model"
                                 class="form-control"
                                 value="{{ asset.model or '' }}"
                             >
@@ -176,13 +181,14 @@ Edit Asset
 
                         <div class="col-md-6">
 
-                            <label class="form-label">
+                            <label class="form-label" for="serial_number">
                                 Serial Number
                             </label>
 
                             <input
                                 type="text"
                                 name="serial_number"
+                                id="serial_number"
                                 class="form-control"
                                 value="{{ asset.serial_number or '' }}"
                             >
@@ -192,7 +198,7 @@ Edit Asset
 
                         <div class="col-md-6">
 
-                            <label class="form-label">
+                            <label class="form-label" for="status">
                                 Status
                             </label>
 
@@ -202,6 +208,7 @@ Edit Asset
                                     type="text"
                                     class="form-control"
                                     value="Assigned"
+                                    id="status"
                                     disabled
                                 >
 
@@ -219,6 +226,7 @@ Edit Asset
 
                                 <select
                                     name="status"
+                                    id="status"
                                     class="form-select"
                                     required
                                 >
@@ -242,13 +250,14 @@ Edit Asset
 
                         <div class="col-md-6">
 
-                            <label class="form-label">
+                            <label class="form-label" for="purchase_date">
                                 Purchase Date
                             </label>
 
                             <input
                                 type="date"
                                 name="purchase_date"
+                                id="purchase_date"
                                 class="form-control"
                                 value="{{ asset.purchase_date or '' }}"
                             >
@@ -258,12 +267,13 @@ Edit Asset
 
                         <div class="col-12">
 
-                            <label class="form-label">
+                            <label class="form-label" for="notes">
                                 Notes
                             </label>
 
                             <textarea
                                 name="notes"
+                                id="notes"
                                 class="form-control"
                                 rows="4"
                             >{{ asset.notes or '' }}</textarea>
@@ -284,6 +294,7 @@ Edit Asset
 
                         <button
                             type="submit"
+                            form="edit-asset-form"
                             class="btn btn-primary"
                         >
                             Save Changes

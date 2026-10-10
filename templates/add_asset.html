@@ -35,7 +35,7 @@ Add Asset
 
         {% if error %}
 
-            <div class="alert alert-danger">
+            <div class="alert alert-danger" role="alert">
                 {{ error }}
             </div>
 
@@ -52,13 +52,14 @@ Add Asset
 
                         <div class="col-md-6">
 
-                            <label class="form-label">
+                            <label class="form-label" for="asset_tag">
                                 Asset Tag
                             </label>
 
                             <input
                                 type="text"
                                 name="asset_tag"
+                                id="asset_tag"
                                 class="form-control"
                                 placeholder="Example: AST-008"
                                 required
@@ -69,13 +70,14 @@ Add Asset
 
                         <div class="col-md-6">
 
-                            <label class="form-label">
+                            <label class="form-label" for="device_name">
                                 Device Name
                             </label>
 
                             <input
                                 type="text"
                                 name="device_name"
+                                id="device_name"
                                 class="form-control"
                                 placeholder="Example: HR Laptop 01"
                                 required
@@ -86,12 +88,13 @@ Add Asset
 
                         <div class="col-md-6">
 
-                            <label class="form-label">
+                            <label class="form-label" for="asset_type">
                                 Asset Type
                             </label>
 
                             <select
                                 name="asset_type"
+                                id="asset_type"
                                 class="form-select"
                                 required
                             >
@@ -139,13 +142,14 @@ Add Asset
 
                         <div class="col-md-6">
 
-                            <label class="form-label">
+                            <label class="form-label" for="brand">
                                 Brand
                             </label>
 
                             <input
                                 type="text"
                                 name="brand"
+                                id="brand"
                                 class="form-control"
                                 placeholder="Example: Lenovo"
                                 required
@@ -156,13 +160,14 @@ Add Asset
 
                         <div class="col-md-6">
 
-                            <label class="form-label">
+                            <label class="form-label" for="model">
                                 Model
                             </label>
 
                             <input
                                 type="text"
                                 name="model"
+                                id="model"
                                 class="form-control"
                                 placeholder="Example: ThinkPad E14"
                             >
@@ -172,13 +177,14 @@ Add Asset
 
                         <div class="col-md-6">
 
-                            <label class="form-label">
+                            <label class="form-label" for="serial_number">
                                 Serial Number
                             </label>
 
                             <input
                                 type="text"
                                 name="serial_number"
+                                id="serial_number"
                                 class="form-control"
                                 placeholder="Example: LEN-008"
                             >
@@ -188,13 +194,14 @@ Add Asset
 
                         <div class="col-md-6">
 
-                            <label class="form-label">
+                            <label class="form-label" for="purchase_date">
                                 Purchase Date
                             </label>
 
                             <input
                                 type="date"
                                 name="purchase_date"
+                                id="purchase_date"
                                 class="form-control"
                             >
 
@@ -203,12 +210,13 @@ Add Asset
 
                         <div class="col-12">
 
-                            <label class="form-label">
+                            <label class="form-label" for="notes">
                                 Notes
                             </label>
 
                             <textarea
                                 name="notes"
+                                id="notes"
                                 class="form-control"
                                 rows="4"
                                 placeholder="Optional notes about this asset"

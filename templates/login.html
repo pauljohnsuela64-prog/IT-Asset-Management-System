@@ -30,24 +30,26 @@ Login
 
                 {% if error %}
 
-                    <div class="alert alert-danger">
+                    <div class="alert alert-danger" role="alert">
                         {{ error }}
                     </div>
 
                 {% endif %}
 
 
-                <form method="POST">
+                <form method="POST" action="{{ url_for('login') }}">
 
                     <div class="mb-3">
 
-                        <label class="form-label">
+                        <label class="form-label" for="username">
                             Username
                         </label>
 
                         <input
                             type="text"
                             name="username"
+                            autocomplete="username"
+                                id="username"
                             class="form-control"
                             required
                             autofocus
@@ -58,13 +60,15 @@ Login
 
                     <div class="mb-4">
 
-                        <label class="form-label">
+                        <label class="form-label" for="password">
                             Password
                         </label>
 
                         <input
                             type="password"
                             name="password"
+                            autocomplete="current-password"
+                                id="password"
                             class="form-control"
                             required
                         >
