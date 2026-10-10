@@ -1,95 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
+{% block title %}Return Asset{% endblock %}
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>Return Asset</title>
-
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}"
-    >
-</head>
-
-<body>
-
-<div class="container">
-
-    <h1>Return Asset</h1>
-
-    <p>
-        Confirm that this asset has been returned.
-    </p>
-
-    {% if error %}
-        <div class="error">
-            {{ error }}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="fw-bold mb-1">Return Asset</h1>
+                <p class="text-muted mb-0">Confirm that this asset has been returned.</p>
+            </div>
+            <a href="{{ url_for('assignments') }}" class="btn btn-outline-secondary">Back to Assignment History</a>
         </div>
-    {% endif %}
 
-    <div class="assignment-details">
+        {% if error %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+        {% endif %}
 
-        <p>
-            <strong>Asset Tag:</strong>
-            {{ assignment.asset_tag }}
-        </p>
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Asset Tag</dt>
+                    <dd class="col-sm-8">{{ assignment.asset_tag }}</dd>
+                    <dt class="col-sm-4">Device</dt>
+                    <dd class="col-sm-8">{{ assignment.device_name }}</dd>
+                    <dt class="col-sm-4">Employee</dt>
+                    <dd class="col-sm-8">{{ assignment.employee_code }} - {{ assignment.full_name }}</dd>
+                    <dt class="col-sm-4">Assigned Date</dt>
+                    <dd class="col-sm-8">{{ assignment.assigned_date }}</dd>
+                    <dt class="col-sm-4">Current Status</dt>
+                    <dd class="col-sm-8"><span class="badge text-bg-primary">{{ assignment.status }}</span></dd>
+                </dl>
 
-        <p>
-            <strong>Device:</strong>
-            {{ assignment.device_name }}
-        </p>
+                <hr class="my-4">
 
-        <p>
-            <strong>Employee:</strong>
-            {{ assignment.employee_code }}
-            -
-            {{ assignment.full_name }}
-        </p>
+                <form id="return-asset-form" method="POST" action="{{ url_for('return_asset_route', assignment_id=assignment.assignment_id) }}">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="returned_date" class="form-label">Returned Date</label>
+                            <input type="date" id="returned_date" name="returned_date" class="form-control"
+                                   min="{{ assignment.assigned_date }}"
+                                   value="{{ request.form.get('returned_date', '') }}" required>
+                        </div>
+                    </div>
 
-        <p>
-            <strong>Assigned Date:</strong>
-            {{ assignment.assigned_date }}
-        </p>
-
-        <p>
-            <strong>Current Status:</strong>
-            {{ assignment.status }}
-        </p>
-
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a href="{{ url_for('assignments') }}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" form="return-asset-form" class="btn btn-primary">Confirm Return</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-
-    <form method="POST">
-
-        <label>Returned Date</label>
-
-        <input
-            type="date"
-            name="returned_date"
-            min="{{ assignment.assigned_date }}"
-            required
-        >
-
-        <div class="form-actions">
-
-            <button type="submit">
-                Confirm Return
-            </button>
-
-            <a href="{{ url_for('assignments') }}">
-                Cancel
-            </a>
-
-        </div>
-
-    </form>
-
 </div>
-
-</body>
-</html>
+{% endblock %}
