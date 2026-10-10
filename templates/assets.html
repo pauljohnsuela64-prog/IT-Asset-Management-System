@@ -1,87 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
+{% block title %}Assets{% endblock %}
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>IT Asset Management System</title>
-
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}"
-    >
-</head>
-
-<body>
-
-<div class="container">
-
-    <h1>IT Asset Management System</h1>
-    <p>Asset Management</p>
-
-    <a href="{{ url_for('employees') }}">
-    Employee Management
-    </a>
-
-    <a href="{{ url_for('maintenance') }}">
-    Maintenance History
-    </a>
-
-    <a href="{{ url_for('assignments') }}">
-    Assignment History
-    </a>
-
-    <div class="section-header">
-
-        <h2>Assets</h2>
-
-        <a href="{{ url_for('add_asset') }}">
-            <button type="button">
-                Add Asset
-            </button>
-        </a>
-
-        <a href="{{ url_for('add_assignment') }}">
-            <button type="button">
-                Assign Asset
-            </button>
-        </a>
-
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="fw-bold mb-1">Asset Management</h1>
+        <p class="text-muted mb-0">Manage company IT assets.</p>
     </div>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('add_asset') }}" class="btn btn-primary">Add Asset</a>
+        <a href="{{ url_for('add_assignment') }}" class="btn btn-outline-primary">Assign Asset</a>
+    </div>
+</div>
 
+<form method="GET" action="{{ url_for('home') }}" class="row g-2 mb-4">
+    <div class="col-md">
+        <input type="text" name="search" class="form-control"
+               placeholder="Search assets..." value="{{ search_term }}">
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-dark">Search</button>
+    </div>
+    <div class="col-auto">
+        <a href="{{ url_for('home') }}" class="btn btn-outline-secondary">Clear</a>
+    </div>
+</form>
 
-    <form
-        method="GET"
-        action="{{ url_for('home') }}"
-        class="search-form"
-    >
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
 
-        <input
-            type="text"
-            name="search"
-            placeholder="Search assets..."
-            value="{{ search_term }}"
-        >
-
-        <button type="submit">
-            Search
-        </button>
-
-        <a href="{{ url_for('home') }}">
-            Clear
-        </a>
-
-    </form>
-
-
-    <table>
-
-        <thead>
+        <thead class="table-light">
 
             <tr>
                 <th>ID</th>
@@ -124,7 +75,7 @@
 
         |
 
-        <a href="{{ url_for('delete_asset_route', asset_id=asset.asset_id) }}">
+        <a class="btn btn-sm btn-outline-danger" href="{{ url_for('delete_asset_route', asset_id=asset.asset_id) }}">
             Delete
         </a>
 
@@ -132,7 +83,7 @@
 
             {% elif asset.status == "Assigned" %}
 
-                <a href="{{ url_for('edit_asset', asset_id=asset.asset_id) }}">
+                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('edit_asset', asset_id=asset.asset_id) }}">
                     Edit
                 </a>
 
@@ -140,7 +91,7 @@
 
             {% else %}
 
-                <a href="{{ url_for('edit_asset', asset_id=asset.asset_id) }}">
+                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('edit_asset', asset_id=asset.asset_id) }}">
                     Edit
                 </a>
 
@@ -148,7 +99,7 @@
 
                     |
 
-                    <a href="{{ url_for('retire_asset_route', asset_id=asset.asset_id) }}">
+                    <a class="btn btn-sm btn-outline-warning" href="{{ url_for('retire_asset_route', asset_id=asset.asset_id) }}">
                         Retire
                     </a>
 
@@ -172,9 +123,7 @@
 </tbody>
 
     </table>
-
+        </div>
+    </div>
 </div>
-
-</body>
-
-</html>
+{% endblock %}

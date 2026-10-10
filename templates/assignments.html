@@ -1,129 +1,181 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
+{% block title %}
+Assignment History
+{% endblock %}
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
 
-    <title>Assignment History</title>
+{% block content %}
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}"
-    >
-</head>
+<div class="d-flex justify-content-between align-items-center mb-4">
 
-<body>
+    <div>
+        <h1 class="fw-bold mb-1">
+            Assignment History
+        </h1>
 
-<div class="container">
-
-    <h1>IT Asset Management System</h1>
-    <p>Assignment History</p>
-
-    <div class="section-header">
-
-        <h2>Asset Assignments</h2>
-
-        <a href="{{ url_for('add_assignment') }}">
-            <button type="button">
-                Assign Asset
-            </button>
-        </a>
-
+        <p class="text-muted mb-0">
+            Track asset assignments and returns.
+        </p>
     </div>
 
-    <table>
-
-        <thead>
-
-            <tr>
-                <th>ID</th>
-                <th>Asset Tag</th>
-                <th>Device Name</th>
-                <th>Type</th>
-                <th>Employee Code</th>
-                <th>Employee</th>
-                <th>Department</th>
-                <th>Assigned Date</th>
-                <th>Returned Date</th>
-                <th>Status</th>
-                <th>Notes</th>
-                <th>Return</th>
-            </tr>
-
-        </thead>
-
-        <tbody>
-
-            {% for assignment in assignments %}
-
-            <tr>
-
-                <td>{{ assignment.assignment_id }}</td>
-
-                <td>{{ assignment.asset_tag }}</td>
-
-                <td>{{ assignment.device_name }}</td>
-
-                <td>{{ assignment.asset_type }}</td>
-
-                <td>{{ assignment.employee_code }}</td>
-
-                <td>{{ assignment.full_name }}</td>
-
-                <td>{{ assignment.department }}</td>
-
-                <td>{{ assignment.assigned_date }}</td>
-
-                <td>{{ assignment.returned_date or '-' }}</td>
-
-                <td>{{ assignment.status }}</td>
-
-                <td>{{ assignment.notes or '-' }}</td>
-
-                <td>
-
-    {% if assignment.status == "Assigned" %}
-
-        <a href="{{ url_for('return_asset_route', assignment_id=assignment.assignment_id) }}">
-            Return
-        </a>
-
-    {% else %}
-
-        Returned
-
-    {% endif %}
-
-</td>
-
-            </tr>
-
-            {% else %}
-
-            <tr>
-                <td colspan="12">
-                    No assignment records found.
-                </td>
-            </tr>
-
-            {% endfor %}
-
-        </tbody>
-
-    </table>
-
-    <br>
-
-    <a href="{{ url_for('home') }}">
-        Back to Assets
+    <a
+        href="{{ url_for('add_assignment') }}"
+        class="btn btn-success"
+    >
+        Assign Asset
     </a>
 
 </div>
 
-</body>
-</html>
+
+<div class="card shadow-sm">
+
+    <div class="card-body p-0">
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-light">
+
+                    <tr>
+                        <th>ID</th>
+                        <th>Asset Tag</th>
+                        <th>Device Name</th>
+                        <th>Type</th>
+                        <th>Employee Code</th>
+                        <th>Employee</th>
+                        <th>Department</th>
+                        <th>Assigned Date</th>
+                        <th>Returned Date</th>
+                        <th>Status</th>
+                        <th>Notes</th>
+                        <th>Actions</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for assignment in assignments %}
+
+                    <tr>
+
+                        <td>
+                            {{ assignment.assignment_id }}
+                        </td>
+
+                        <td>
+                            <strong>
+                                {{ assignment.asset_tag }}
+                            </strong>
+                        </td>
+
+                        <td>
+                            {{ assignment.device_name }}
+                        </td>
+
+                        <td>
+                            {{ assignment.asset_type }}
+                        </td>
+
+                        <td>
+                            {{ assignment.employee_code }}
+                        </td>
+
+                        <td>
+                            {{ assignment.full_name }}
+                        </td>
+
+                        <td>
+                            {{ assignment.department }}
+                        </td>
+
+                        <td>
+                            {{ assignment.assigned_date }}
+                        </td>
+
+                        <td>
+                            {{ assignment.returned_date or '-' }}
+                        </td>
+
+                        <td>
+
+                            {% if assignment.status == "Assigned" %}
+
+                                <span class="badge text-bg-primary">
+                                    Assigned
+                                </span>
+
+                            {% elif assignment.status == "Returned" %}
+
+                                <span class="badge text-bg-success">
+                                    Returned
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge text-bg-secondary">
+                                    {{ assignment.status }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+                            {{ assignment.notes or '-' }}
+                        </td>
+
+                        <td>
+
+                            {% if assignment.status == "Assigned" %}
+
+                                <a
+                                    href="{{ url_for('return_asset_route', assignment_id=assignment.assignment_id) }}"
+                                    class="btn btn-sm btn-outline-success"
+                                >
+                                    Return
+                                </a>
+
+                            {% else %}
+
+                                <span class="text-muted">
+                                    Returned
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+
+                    {% else %}
+
+                    <tr>
+
+                        <td
+                            colspan="12"
+                            class="text-center text-muted py-4"
+                        >
+                            No assignment records found.
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

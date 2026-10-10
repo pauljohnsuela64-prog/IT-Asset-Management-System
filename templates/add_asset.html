@@ -1,133 +1,251 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Add Asset</title>
-
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}"
-    >
-</head>
-
-<body>
-
-<div class="container">
-
-    <h1>Add Asset</h1>
-
-    <p>Add a new IT asset to the system.</p>
-
-    {% if error %}
-
-        <div class="error">
-            {{ error }}
-        </div>
-
-    {% endif %}
-
-    <form method="POST">
-
-        <label>Asset Tag</label>
-
-        <input
-            type="text"
-            name="asset_tag"
-            placeholder="Example: AST-001"
-            required
-        >
+{% block title %}
+Add Asset
+{% endblock %}
 
 
-        <label>Device Name</label>
+{% block content %}
 
-        <input
-            type="text"
-            name="device_name"
-            placeholder="Example: Accounting Laptop 01"
-            required
-        >
+<div class="row justify-content-center">
 
+    <div class="col-lg-8">
 
-        <label>Asset Type</label>
+        <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <select name="asset_type" required>
+            <div>
+                <h1 class="fw-bold mb-1">
+                    Add Asset
+                </h1>
 
-            <option value="">Select Asset Type</option>
-            <option value="Laptop">Laptop</option>
-            <option value="Desktop">Desktop</option>
-            <option value="Monitor">Monitor</option>
-            <option value="Printer">Printer</option>
-            <option value="Network Device">Network Device</option>
-            <option value="Mobile Device">Mobile Device</option>
-            <option value="Peripheral">Peripheral</option>
-            <option value="Other">Other</option>
+                <p class="text-muted mb-0">
+                    Register a new IT asset in the system.
+                </p>
+            </div>
 
-        </select>
-
-
-        <label>Brand</label>
-
-        <input
-            type="text"
-            name="brand"
-            placeholder="Example: Lenovo"
-            required
-        >
-
-
-        <label>Model</label>
-
-        <input
-            type="text"
-            name="model"
-            placeholder="Example: ThinkPad E14"
-        >
-
-
-        <label>Serial Number</label>
-
-        <input
-            type="text"
-            name="serial_number"
-            placeholder="Example: PF123456"
-        >
-
-
-        <label>Purchase Date</label>
-
-        <input
-            type="date"
-            name="purchase_date"
-        >
-
-
-        <label>Notes</label>
-
-        <textarea
-            name="notes"
-            rows="4"
-            placeholder="Optional notes about the asset"
-        ></textarea>
-
-
-        <div class="form-actions">
-
-            <button type="submit">
-                Save Asset
-            </button>
-
-            <a href="{{ url_for('home') }}">
-                Cancel
+            <a
+                href="{{ url_for('home') }}"
+                class="btn btn-outline-secondary"
+            >
+                Back to Assets
             </a>
 
         </div>
 
-    </form>
+
+        {% if error %}
+
+            <div class="alert alert-danger">
+                {{ error }}
+            </div>
+
+        {% endif %}
+
+
+        <div class="card shadow-sm">
+
+            <div class="card-body p-4">
+
+                <form id="add-asset-form" method="POST" action="{{ url_for('add_asset') }}">
+
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Asset Tag
+                            </label>
+
+                            <input
+                                type="text"
+                                name="asset_tag"
+                                class="form-control"
+                                placeholder="Example: AST-008"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Device Name
+                            </label>
+
+                            <input
+                                type="text"
+                                name="device_name"
+                                class="form-control"
+                                placeholder="Example: HR Laptop 01"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Asset Type
+                            </label>
+
+                            <select
+                                name="asset_type"
+                                class="form-select"
+                                required
+                            >
+
+                                <option value="">
+                                    Select Asset Type
+                                </option>
+
+                                <option value="Laptop">
+                                    Laptop
+                                </option>
+
+                                <option value="Desktop">
+                                    Desktop
+                                </option>
+
+                                <option value="Monitor">
+                                    Monitor
+                                </option>
+
+                                <option value="Printer">
+                                    Printer
+                                </option>
+
+                                <option value="Network Device">
+                                    Network Device
+                                </option>
+
+                                <option value="Mobile Device">
+                                    Mobile Device
+                                </option>
+
+                                <option value="Peripheral">
+                                    Peripheral
+                                </option>
+
+                                <option value="Other">
+                                    Other
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Brand
+                            </label>
+
+                            <input
+                                type="text"
+                                name="brand"
+                                class="form-control"
+                                placeholder="Example: Lenovo"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Model
+                            </label>
+
+                            <input
+                                type="text"
+                                name="model"
+                                class="form-control"
+                                placeholder="Example: ThinkPad E14"
+                            >
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Serial Number
+                            </label>
+
+                            <input
+                                type="text"
+                                name="serial_number"
+                                class="form-control"
+                                placeholder="Example: LEN-008"
+                            >
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Purchase Date
+                            </label>
+
+                            <input
+                                type="date"
+                                name="purchase_date"
+                                class="form-control"
+                            >
+
+                        </div>
+
+
+                        <div class="col-12">
+
+                            <label class="form-label">
+                                Notes
+                            </label>
+
+                            <textarea
+                                name="notes"
+                                class="form-control"
+                                rows="4"
+                                placeholder="Optional notes about this asset"
+                            ></textarea>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+
+                        <a
+                            href="{{ url_for('home') }}"
+                            class="btn btn-outline-secondary"
+                        >
+                            Cancel
+                        </a>
+
+                        <button
+                            type="submit"
+                            form="add-asset-form"
+                            class="btn btn-primary"
+                        >
+                            Save Asset
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
-</body>
-</html>
+{% endblock %}

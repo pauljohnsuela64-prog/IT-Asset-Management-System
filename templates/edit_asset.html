@@ -1,184 +1,304 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+{% block title %}
+Edit Asset
+{% endblock %}
 
-    <title>Edit Asset</title>
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}"
-    >
-</head>
+{% block content %}
 
-<body>
+<div class="row justify-content-center">
 
-<div class="container">
+    <div class="col-lg-8">
 
-    <h1>Edit Asset</h1>
-    <p>Update the selected IT asset.</p>
+        <div class="d-flex justify-content-between align-items-center mb-4">
 
-    {% if error %}
-        <div class="error">
-            {{ error }}
-        </div>
-    {% endif %}
+            <div>
+                <h1 class="fw-bold mb-1">
+                    Edit Asset
+                </h1>
 
-    <form method="POST">
+                <p class="text-muted mb-0">
+                    Update asset information.
+                </p>
+            </div>
 
-        <label>Asset Tag</label>
-        <input
-            type="text"
-            name="asset_tag"
-            value="{{ asset.asset_tag }}"
-            required
-        >
-
-        <label>Device Name</label>
-        <input
-            type="text"
-            name="device_name"
-            value="{{ asset.device_name }}"
-            required
-        >
-
-        <label>Asset Type</label>
-        <select name="asset_type" required>
-
-            <option value="Laptop"
-                {% if asset.asset_type == "Laptop" %}selected{% endif %}>
-                Laptop
-            </option>
-
-            <option value="Desktop"
-                {% if asset.asset_type == "Desktop" %}selected{% endif %}>
-                Desktop
-            </option>
-
-            <option value="Monitor"
-                {% if asset.asset_type == "Monitor" %}selected{% endif %}>
-                Monitor
-            </option>
-
-            <option value="Printer"
-                {% if asset.asset_type == "Printer" %}selected{% endif %}>
-                Printer
-            </option>
-
-            <option value="Network Device"
-                {% if asset.asset_type == "Network Device" %}selected{% endif %}>
-                Network Device
-            </option>
-
-            <option value="Mobile Device"
-                {% if asset.asset_type == "Mobile Device" %}selected{% endif %}>
-                Mobile Device
-            </option>
-
-            <option value="Peripheral"
-                {% if asset.asset_type == "Peripheral" %}selected{% endif %}>
-                Peripheral
-            </option>
-
-            <option value="Other"
-                {% if asset.asset_type == "Other" %}selected{% endif %}>
-                Other
-            </option>
-
-        </select>
-
-        <label>Brand</label>
-        <input
-            type="text"
-            name="brand"
-            value="{{ asset.brand }}"
-            required
-        >
-
-        <label>Model</label>
-        <input
-            type="text"
-            name="model"
-            value="{{ asset.model or '' }}"
-        >
-
-        <label>Serial Number</label>
-        <input
-            type="text"
-            name="serial_number"
-            value="{{ asset.serial_number or '' }}"
-        >
-
-        <label>Status</label>
-
-{% if asset.status == "Assigned" %}
-
-    <input
-        type="text"
-        value="Assigned"
-        disabled
-    >
-
-    <input
-        type="hidden"
-        name="status"
-        value="Assigned"
-    >
-
-{% else %}
-
-    <select name="status" required>
-
-        <option value="Available"
-            {% if asset.status == "Available" %}selected{% endif %}>
-            Available
-        </option>
-
-        <option value="Under Maintenance"
-            {% if asset.status == "Under Maintenance" %}selected{% endif %}>
-            Under Maintenance
-        </option>
-
-    </select>
-
-{% endif %}
-
-        <label>Purchase Date</label>
-        <input
-            type="date"
-            name="purchase_date"
-            value="{{ asset.purchase_date or '' }}"
-        >
-
-        <label>Notes</label>
-        <textarea
-            name="notes"
-            rows="4"
-        >{{ asset.notes or '' }}</textarea>
-
-        <div class="form-actions">
-
-            <button type="submit">
-                Save Changes
-            </button>
-
-            <a href="{{ url_for('home') }}">
-                Cancel
+            <a
+                href="{{ url_for('home') }}"
+                class="btn btn-outline-secondary"
+            >
+                Back to Assets
             </a>
 
         </div>
 
-    </form>
+
+        {% if error %}
+
+            <div class="alert alert-danger">
+                {{ error }}
+            </div>
+
+        {% endif %}
+
+
+        <div class="card shadow-sm">
+
+            <div class="card-body p-4">
+
+                <form method="POST">
+
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Asset Tag
+                            </label>
+
+                            <input
+                                type="text"
+                                name="asset_tag"
+                                class="form-control"
+                                value="{{ asset.asset_tag }}"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Device Name
+                            </label>
+
+                            <input
+                                type="text"
+                                name="device_name"
+                                class="form-control"
+                                value="{{ asset.device_name }}"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Asset Type
+                            </label>
+
+                            <select
+                                name="asset_type"
+                                class="form-select"
+                                required
+                            >
+
+                                <option value="Laptop"
+                                    {% if asset.asset_type == "Laptop" %}selected{% endif %}>
+                                    Laptop
+                                </option>
+
+                                <option value="Desktop"
+                                    {% if asset.asset_type == "Desktop" %}selected{% endif %}>
+                                    Desktop
+                                </option>
+
+                                <option value="Monitor"
+                                    {% if asset.asset_type == "Monitor" %}selected{% endif %}>
+                                    Monitor
+                                </option>
+
+                                <option value="Printer"
+                                    {% if asset.asset_type == "Printer" %}selected{% endif %}>
+                                    Printer
+                                </option>
+
+                                <option value="Network Device"
+                                    {% if asset.asset_type == "Network Device" %}selected{% endif %}>
+                                    Network Device
+                                </option>
+
+                                <option value="Mobile Device"
+                                    {% if asset.asset_type == "Mobile Device" %}selected{% endif %}>
+                                    Mobile Device
+                                </option>
+
+                                <option value="Peripheral"
+                                    {% if asset.asset_type == "Peripheral" %}selected{% endif %}>
+                                    Peripheral
+                                </option>
+
+                                <option value="Other"
+                                    {% if asset.asset_type == "Other" %}selected{% endif %}>
+                                    Other
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Brand
+                            </label>
+
+                            <input
+                                type="text"
+                                name="brand"
+                                class="form-control"
+                                value="{{ asset.brand }}"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Model
+                            </label>
+
+                            <input
+                                type="text"
+                                name="model"
+                                class="form-control"
+                                value="{{ asset.model or '' }}"
+                            >
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Serial Number
+                            </label>
+
+                            <input
+                                type="text"
+                                name="serial_number"
+                                class="form-control"
+                                value="{{ asset.serial_number or '' }}"
+                            >
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Status
+                            </label>
+
+                            {% if asset.status == "Assigned" %}
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    value="Assigned"
+                                    disabled
+                                >
+
+                                <input
+                                    type="hidden"
+                                    name="status"
+                                    value="Assigned"
+                                >
+
+                                <div class="form-text">
+                                    Return this asset before changing its status.
+                                </div>
+
+                            {% else %}
+
+                                <select
+                                    name="status"
+                                    class="form-select"
+                                    required
+                                >
+
+                                    <option value="Available"
+                                        {% if asset.status == "Available" %}selected{% endif %}>
+                                        Available
+                                    </option>
+
+                                    <option value="Under Maintenance"
+                                        {% if asset.status == "Under Maintenance" %}selected{% endif %}>
+                                        Under Maintenance
+                                    </option>
+
+                                </select>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Purchase Date
+                            </label>
+
+                            <input
+                                type="date"
+                                name="purchase_date"
+                                class="form-control"
+                                value="{{ asset.purchase_date or '' }}"
+                            >
+
+                        </div>
+
+
+                        <div class="col-12">
+
+                            <label class="form-label">
+                                Notes
+                            </label>
+
+                            <textarea
+                                name="notes"
+                                class="form-control"
+                                rows="4"
+                            >{{ asset.notes or '' }}</textarea>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+
+                        <a
+                            href="{{ url_for('home') }}"
+                            class="btn btn-outline-secondary"
+                        >
+                            Cancel
+                        </a>
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                        >
+                            Save Changes
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
-
-
-</body>
-</html>
-
+{% endblock %}

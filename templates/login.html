@@ -1,64 +1,96 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
+{% block title %}
+Login
+{% endblock %}
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
 
-    <title>Login</title>
+{% block content %}
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}"
-    >
-</head>
+<div class="row justify-content-center mt-5">
 
-<body>
+    <div class="col-md-6 col-lg-4">
 
-<div class="container">
+        <div class="card shadow-sm">
 
-    <h1>IT Asset Management System</h1>
-    <p>Sign in to continue.</p>
+            <div class="card-body p-4">
 
-    {% if error %}
-        <div class="error">
-            {{ error }}
+                <div class="text-center mb-4">
+
+                    <h2 class="fw-bold">
+                        IT Asset Management
+                    </h2>
+
+                    <p class="text-muted">
+                        Sign in to continue
+                    </p>
+
+                </div>
+
+
+                {% if error %}
+
+                    <div class="alert alert-danger">
+                        {{ error }}
+                    </div>
+
+                {% endif %}
+
+
+                <form method="POST">
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Username
+                        </label>
+
+                        <input
+                            type="text"
+                            name="username"
+                            class="form-control"
+                            required
+                            autofocus
+                        >
+
+                    </div>
+
+
+                    <div class="mb-4">
+
+                        <label class="form-label">
+                            Password
+                        </label>
+
+                        <input
+                            type="password"
+                            name="password"
+                            class="form-control"
+                            required
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-dark w-100"
+                    >
+                        Login
+                    </button>
+
+                </form>
+
+            </div>
+
         </div>
-    {% endif %}
 
-    <form method="POST">
+        <p class="text-center text-muted mt-3 small">
+            IT Asset Management System
+        </p>
 
-        <label>Username</label>
-
-        <input
-            type="text"
-            name="username"
-            required
-        >
-
-        <label>Password</label>
-
-        <input  
-            type="password"
-            name="password"
-            required
-        >
-
-        <div class="form-actions">
-
-            <button type="submit">
-                Login
-            </button>
-
-        </div>
-
-    </form>
+    </div>
 
 </div>
 
-</body>
-</html>
+{% endblock %}

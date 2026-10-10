@@ -163,7 +163,7 @@ def add_asset():
                     notes,
                 )
 
-                return redirect(url_for("dashboard"))
+                return redirect(url_for("home"))
 
             except mysql.connector.IntegrityError:
                 error = "Asset Tag or Serial Number already exists."

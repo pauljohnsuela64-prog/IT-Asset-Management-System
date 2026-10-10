@@ -1,137 +1,190 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
+{% block title %}
+Employees
+{% endblock %}
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
 
-    <title>Employee Management</title>
+{% block content %}
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}"
-    >
-</head>
+<div class="d-flex justify-content-between align-items-center mb-4">
 
-<body>
+    <div>
+        <h1 class="fw-bold mb-1">
+            Employee Management
+        </h1>
 
-<div class="container">
-
-    <h1>IT Asset Management System</h1>
-    <p>Employee Management</p>
-
-    <div class="section-header">
-
-        <h2>Employees</h2>
-
-        <a href="{{ url_for('add_employee') }}">
-    <button type="button">
-        Add Employee
-    </button>
-    </a>
-
+        <p class="text-muted mb-0">
+            Manage employees who can receive company IT assets.
+        </p>
     </div>
 
-    <form
-    method="GET"
-    action="{{ url_for('employees') }}"
-    class="search-form"
->
-
-    <input
-        type="text"
-        name="search"
-        placeholder="Search employees..."
-        value="{{ search_term }}"
+    <a
+        href="{{ url_for('add_employee') }}"
+        class="btn btn-primary"
     >
-
-    <button type="submit">
-        Search
-    </button>
-
-    <a href="{{ url_for('employees') }}">
-        Clear
-    </a>
-
-</form>
-
-    <table>
-
-        <thead>
-
-            <tr>
-                <th>ID</th>
-                <th>Employee Code</th>
-                <th>Full Name</th>
-                <th>Department</th>
-                <th>Position</th>
-                <th>Email</th>
-                <th>Status</th>
-                <th>edit</th>
-            </tr>
-
-        </thead>
-
-        <tbody>
-
-            {% for employee in employees %}
-
-            <tr>
-
-                <td>{{ employee.employee_id }}</td>
-                <td>{{ employee.employee_code }}</td>
-                <td>{{ employee.full_name }}</td>
-                <td>{{ employee.department }}</td>
-                <td>{{ employee.position or '-' }}</td>
-                <td>{{ employee.email or '-' }}</td>
-                <td>{{ employee.status }}</td>
-                
-                <td>
-
-    <a href="{{ url_for('edit_employee', employee_id=employee.employee_id) }}">
-        Edit
-    </a>
-
-    {% if employee.status == "Active"
-          and session.get("role") == "Admin" %}
-
-        |
-
-        <a href="{{ url_for('deactivate_employee_route', employee_id=employee.employee_id) }}">
-            Deactivate
-        </a>
-
-    {% endif %}
-
-</td>
-            </tr>
-
-            {% else %}
-
-            <tr>
-                <td colspan="8"
-                    No employees found.
-                </td>
-            </tr>
-
-            {% endfor %}
-
-        </tbody>
-
-    </table>
-
-    <br>
-
-    <a href="{{ url_for('home') }}">
-        Back to Assets
+        Add Employee
     </a>
 
 </div>
 
-</body>
 
-</html>
+<form
+    method="GET"
+    action="{{ url_for('employees') }}"
+    class="row g-2 mb-4"
+>
+
+    <div class="col-md">
+
+        <input
+            type="text"
+            name="search"
+            class="form-control"
+            placeholder="Search employees..."
+            value="{{ search_term }}"
+        >
+
+    </div>
+
+    <div class="col-auto">
+
+        <button
+            type="submit"
+            class="btn btn-dark"
+        >
+            Search
+        </button>
+
+    </div>
+
+    <div class="col-auto">
+
+        <a
+            href="{{ url_for('employees') }}"
+            class="btn btn-outline-secondary"
+        >
+            Clear
+        </a>
+
+    </div>
+
+</form>
+
+
+<div class="card shadow-sm">
+
+    <div class="card-body p-0">
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-light">
+
+                    <tr>
+                        <th>ID</th>
+                        <th>Employee Code</th>
+                        <th>Full Name</th>
+                        <th>Department</th>
+                        <th>Position</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for employee in employees %}
+
+                    <tr>
+
+                        <td>{{ employee.employee_id }}</td>
+
+                        <td>
+                            <strong>
+                                {{ employee.employee_code }}
+                            </strong>
+                        </td>
+
+                        <td>{{ employee.full_name }}</td>
+
+                        <td>{{ employee.department }}</td>
+
+                        <td>{{ employee.position or '-' }}</td>
+
+                        <td>{{ employee.email or '-' }}</td>
+
+                        <td>
+
+                            {% if employee.status == "Active" %}
+
+                                <span class="badge text-bg-success">
+                                    Active
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge text-bg-secondary">
+                                    Inactive
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            <a
+                                href="{{ url_for('edit_employee', employee_id=employee.employee_id) }}"
+                                class="btn btn-sm btn-outline-primary"
+                            >
+                                Edit
+                            </a>
+
+                            {% if employee.status == "Active"
+                                  and session.get("role") == "Admin" %}
+
+                                <a
+                                    href="{{ url_for('deactivate_employee_route', employee_id=employee.employee_id) }}"
+                                    class="btn btn-sm btn-outline-danger ms-1"
+                                >
+                                    Deactivate
+                                </a>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+
+                    {% else %}
+
+                    <tr>
+
+                        <td
+                            colspan="8"
+                            class="text-center text-muted py-4"
+                        >
+                            No employees found.
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

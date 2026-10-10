@@ -1,118 +1,195 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
+{% block title %}
+Dashboard
+{% endblock %}
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
 
-    <title>Dashboard</title>
+{% block content %}
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}"
-    >
-</head>
+<div class="mb-4">
 
-<body>
+    <h1 class="fw-bold">
+        Dashboard
+    </h1>
 
-<div class="container">
-
-    <h1>IT Asset Management System</h1>
-
-    <p>
-        Welcome, {{ session.get("username") }}!
-        Role: {{ session.get("role") }}
+    <p class="text-muted">
+        Welcome, {{ session.get("username") }}.
+        Here's an overview of your IT assets.
     </p>
 
-    <h2>Dashboard</h2>
+</div>
 
 
-    <div class="dashboard-grid">
+<div class="row g-4">
 
-        <div class="dashboard-card">
-            <h3>Total Assets</h3>
-            <p>{{ stats.total_assets }}</p>
-        </div>
+    <div class="col-md-6 col-xl-3">
 
-        <div class="dashboard-card">
-            <h3>Available Assets</h3>
-            <p>{{ stats.available_assets }}</p>
-        </div>
+        <div class="card shadow-sm h-100">
 
-        <div class="dashboard-card">
-            <h3>Assigned Assets</h3>
-            <p>{{ stats.assigned_assets }}</p>
-        </div>
+            <div class="card-body">
 
-        <div class="dashboard-card">
-            <h3>Under Maintenance</h3>
-            <p>{{ stats.maintenance_assets }}</p>
-        </div>
+                <h6 class="text-muted">
+                    Total Assets
+                </h6>
 
-        <div class="dashboard-card">
-            <h3>Retired Assets</h3>
-            <p>{{ stats.retired_assets }}</p>
-        </div>
+                <h2 class="fw-bold">
+                    {{ stats.total_assets }}
+                </h2>
 
-        <div class="dashboard-card">
-            <h3>Active Employees</h3>
-            <p>{{ stats.active_employees }}</p>
-        </div>
+            </div>
 
-        <div class="dashboard-card">
-            <h3>Active Assignments</h3>
-            <p>{{ stats.active_assignments }}</p>
-        </div>
-
-        <div class="dashboard-card">
-            <h3>Open Maintenance</h3>
-            <p>{{ stats.open_maintenance }}</p>
         </div>
 
     </div>
 
 
-    <div class="dashboard-navigation">
+    <div class="col-md-6 col-xl-3">
 
-        <a href="{{ url_for('home') }}">
-            Assets
-        </a>
+        <div class="card shadow-sm h-100">
 
-        <a href="{{ url_for('employees') }}">
-            Employees
-        </a>
+            <div class="card-body">
 
-        <a href="{{ url_for('assignments') }}">
-            Assignment History
-        </a>
+                <h6 class="text-muted">
+                    Available Assets
+                </h6>
 
-        <a href="{{ url_for('maintenance') }}">
-            Maintenance History
-        </a>
+                <h2 class="fw-bold">
+                    {{ stats.available_assets }}
+                </h2>
 
-        <a href="{{ url_for('reports') }}">
-            Reports
-        </a>
+            </div>
 
-        {% if session.get("role") == "Admin" %}
+        </div>
 
-        <a href="{{ url_for('users') }}">
-            User Management
-         </a>
+    </div>
 
-        {% endif %}
 
-        <a href="{{ url_for('logout') }}">
-            Logout
-        </a>
+    <div class="col-md-6 col-xl-3">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-body">
+
+                <h6 class="text-muted">
+                    Assigned Assets
+                </h6>
+
+                <h2 class="fw-bold">
+                    {{ stats.assigned_assets }}
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-md-6 col-xl-3">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-body">
+
+                <h6 class="text-muted">
+                    Under Maintenance
+                </h6>
+
+                <h2 class="fw-bold">
+                    {{ stats.maintenance_assets }}
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-md-6 col-xl-3">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-body">
+
+                <h6 class="text-muted">
+                    Retired Assets
+                </h6>
+
+                <h2 class="fw-bold">
+                    {{ stats.retired_assets }}
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-md-6 col-xl-3">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-body">
+
+                <h6 class="text-muted">
+                    Active Employees
+                </h6>
+
+                <h2 class="fw-bold">
+                    {{ stats.active_employees }}
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-md-6 col-xl-3">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-body">
+
+                <h6 class="text-muted">
+                    Active Assignments
+                </h6>
+
+                <h2 class="fw-bold">
+                    {{ stats.active_assignments }}
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-md-6 col-xl-3">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-body">
+
+                <h6 class="text-muted">
+                    Open Maintenance
+                </h6>
+
+                <h2 class="fw-bold">
+                    {{ stats.open_maintenance }}
+                </h2>
+
+            </div>
+
+        </div>
 
     </div>
 
 </div>
 
-</body>
-</html>
+{% endblock %}
