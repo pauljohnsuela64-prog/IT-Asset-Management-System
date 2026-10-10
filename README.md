@@ -89,6 +89,8 @@ IT-Asset-Management-System/
 |   |-- login.html
 |   `-- ...
 |-- static/css/style.css
+|-- init_database.py               # Manual creation of missing tables
+|-- railway.json                   # Gunicorn start command and login healthcheck
 |-- setup_assets.py
 |-- setup_employees.py
 |-- setup_asset_assignments.py
@@ -107,7 +109,7 @@ The local `.env` file is ignored by Git and is not included in the repository.
 
 ## Database
 
-The application expects a database named **`it_asset_management`**. `database.py` refuses connections when `DB_NAME` differs from this name.
+Local configuration defaults to the database **`it_asset_management`**. Every connection checks the selected database against `DB_EXPECTED_NAME`, which defaults to this local name. Railway deployments must explicitly set `DB_EXPECTED_NAME` to their MySQL service database name; the guard is retained rather than disabled.
 
 | Table | Main information |
 |---|---|
@@ -182,7 +184,8 @@ Configure these values in `.env`:
 | `DB_PORT` | MySQL port, typically `3306` |
 | `DB_USER` | A dedicated MySQL application account |
 | `DB_PASSWORD` | That account's local password |
-| `DB_NAME` | Must be `it_asset_management` |
+| `DB_NAME` | `it_asset_management` for the existing local setup |
+| `DB_EXPECTED_NAME` | Expected database name; defaults to `it_asset_management` |
 | `SECRET_KEY` | A long random value for signing sessions |
 | `FLASK_DEBUG` | Keep `0` by default; enable debugging only during local development |
 
@@ -241,6 +244,91 @@ python -m flask --app app run
 Open [http://127.0.0.1:5000](http://127.0.0.1:5000) and sign in with the Admin account you created.
 
 `python app.py` is also supported. Debug mode is optional for local development; never expose the development server or debugger publicly. Bootstrap is loaded from a CDN, so its styling and interactive components require access to that CDN.
+
+## Railway deployment preparation
+
+The repository is prepared for a Flask web service and a separate Railway MySQL service. Provisioning, deployment, and production initialization are manual steps; nothing runs against Railway automatically from local setup.
+
+### Services and production startup
+
+When ready to deploy, create a Railway project with a MySQL service and a web service connected to this GitHub repository. Configure variables before starting the web deployment. Use the repository root as the application root.
+
+`railway.json` sets the production start command to:
+
+```bash
+gunicorn app:app
+```
+
+Gunicorn is pinned in `requirements.txt`. It loads the existing Flask `app` object without executing the `python app.py` development-server block. Gunicorn uses Railway's supplied `PORT` environment variable, so there is no fixed production port or URL in application code. The healthcheck uses `/login`, which does not require a database query; a successful healthcheck alone does not verify database initialization.
+
+Local `python app.py` and Flask CLI usage remain supported. Gunicorn is intended for Linux/Unix environments, including Railway; run its startup verification on Linux rather than native Windows:
+
+```bash
+gunicorn --check-config app:app
+```
+
+Native Windows raises a missing `fcntl` error when starting Gunicorn. Local checks verified the WSGI target, installed requirements, local HTTP startup, configuration selection, and nondestructive initialization behavior with mocked database calls. Actual Gunicorn startup and Railway connectivity still need verification in the Linux deployment.
+
+### Web-service variables
+
+For a MySQL service named `MySQL`, add these reference variables to the **web service**. If your service has another name, adjust the references accordingly. MySQL service variables are not automatically shared with the web service.
+
+| Web-service variable | Value or reference |
+|---|---|
+| `MYSQLHOST` | `${{MySQL.MYSQLHOST}}` |
+| `MYSQLPORT` | `${{MySQL.MYSQLPORT}}` |
+| `MYSQLUSER` | `${{MySQL.MYSQLUSER}}` |
+| `MYSQLPASSWORD` | `${{MySQL.MYSQLPASSWORD}}` |
+| `MYSQLDATABASE` | `${{MySQL.MYSQLDATABASE}}` |
+| `DB_EXPECTED_NAME` | `${{MySQL.MYSQLDATABASE}}` |
+| `SECRET_KEY` | A separately generated long random production secret, stored privately in Railway |
+| `FLASK_DEBUG` | `0` |
+
+Do not copy local `DB_*` settings or the local `.env` file into the deployment. Keep the production secret stable across restarts and separate from your development key. Do not print secrets or put them in source, screenshots, or commands saved in shell history.
+
+**Configuration precedence:** if any local `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, or `DB_NAME` variable is present, the complete local configuration is used. Otherwise the complete `MYSQL*` field configuration is used. If neither field group is present, `MYSQL_URL` is supported as an alternative. Incomplete groups fail instead of mixing credentials from different services. The port defaults to 3306 when omitted. `MYSQL_URL` must use the `mysql://` scheme without query parameters; URL-encoded usernames, passwords, and database names are decoded. A URL-only deployment still needs `DB_EXPECTED_NAME`.
+
+The database-name guard remains active in every mode. For local use it retains the existing `it_asset_management` default. A Railway database with another name is accepted only when you explicitly configure the same expected name. A mismatch is refused before opening a connection.
+
+### Initialize a fresh production database
+
+After the web container is running with its variables configured, open an interactive shell **inside that web service** using the Railway CLI:
+
+```bash
+railway login
+railway link
+railway ssh --service YOUR_WEB_SERVICE_NAME
+```
+
+Select the intended project/environment when linking. Inside the container, change to the application root if necessary, then run:
+
+```bash
+python init_database.py
+```
+
+The initializer uses the configured database and runs the existing SQL files in dependency order: assets, employees, assignments, maintenance, then users. It only creates missing tables using `CREATE TABLE IF NOT EXISTS`; it does not drop tables, overwrite rows, seed accounts, or migrate existing tables. It stops with a nonzero exit status on errors and prints no connection credentials. MySQL table creation can commit independently, so a failed run may leave earlier tables created; resolve the cause and retry. Back up an existing production database before any manual schema operation.
+
+Do not run initialization as a build command: Railway private database networking is available at runtime. No automatic pre-deploy or startup initialization is configured. The older individual setup scripts remain available for local use.
+
+### Create the first production Admin
+
+In the same interactive web-service shell, after all tables exist:
+
+```bash
+python create_admin.py
+```
+
+Choose a new username and enter a strong password twice at the hidden prompts. The existing script hashes the password and creates an Active Admin account. It does not reset or replace an existing username. Do not pass an Admin password through command arguments or commit it to an environment example.
+
+Use the generated HTTPS web-service domain to sign in, then create further accounts through User Management. Verify database access, reports/export, and Admin/Staff permissions before sharing the application publicly. Keep the MySQL service on private networking; local commands do not resolve its private hostname, so use the remote service shell for these steps.
+
+### Deployment limitations and remaining security work
+
+Repository preparation is not an end-to-end Railway deployment test. A real deployment still requires provisioning MySQL, supplying the web-service variables, installing dependencies in the Linux build, initializing tables, creating an Admin, and verifying the deployed application. Configure database backups and review least-privilege access.
+
+Before exposing sensitive data, address the existing CSRF, login rate-limiting, and session-revocation gaps described below. Configure HTTPS cookie security and deployment headers without breaking local HTTP development. These business/authentication changes are intentionally outside deployment preparation.
+
+References: [Railway Flask guide](https://docs.railway.com/guides/flask), [Railway MySQL](https://docs.railway.com/databases/mysql), [Railway SSH](https://docs.railway.com/cli/ssh), and [Gunicorn configuration](https://docs.gunicorn.org/en/stable/settings.html).
 
 ## Security and data integrity
 
