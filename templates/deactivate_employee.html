@@ -1,80 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
+{% block title %}Deactivate Employee{% endblock %}
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <h1 class="fw-bold mb-4">Deactivate Employee</h1>
 
-    <title>Deactivate Employee</title>
+        {% if error %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+        {% endif %}
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}"
-    >
-</head>
+        <div class="card shadow-sm border-warning">
+            <div class="card-header text-bg-warning">Deactivate Employee</div>
+            <div class="card-body p-4">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Employee Code</dt>
+                    <dd class="col-sm-8">{{ employee.employee_code }}</dd>
+                    <dt class="col-sm-4">Full Name</dt>
+                    <dd class="col-sm-8">{{ employee.full_name }}</dd>
+                    <dt class="col-sm-4">Department</dt>
+                    <dd class="col-sm-8">{{ employee.department }}</dd>
+                    <dt class="col-sm-4">Position</dt>
+                    <dd class="col-sm-8">{{ employee.position or '-' }}</dd>
+                    <dt class="col-sm-4">Current Status</dt>
+                    <dd class="col-sm-8">{{ employee.status }}</dd>
+                </dl>
 
-<body>
+                <div class="alert alert-warning mt-3" role="alert">
+                    Are you sure you want to deactivate this employee? Deactivation prevents new asset assignments while preserving existing assignment history.
+                </div>
 
-<div class="container">
-
-    <h1>Deactivate Employee</h1>
-
-    <p>
-        Are you sure you want to deactivate this employee?
-    </p>
-
-    {% if error %}
-        <div class="error">
-            {{ error }}
+                <form id="deactivate-employee-form" method="POST" action="{{ url_for('deactivate_employee_route', employee_id=employee.employee_id) }}">
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('employees') }}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" form="deactivate-employee-form" class="btn btn-warning">Confirm Deactivation</button>
+                    </div>
+                </form>
+            </div>
         </div>
-    {% endif %}
-
-    <div class="employee-details">
-
-        <p>
-            <strong>Employee Code:</strong>
-            {{ employee.employee_code }}
-        </p>
-
-        <p>
-            <strong>Full Name:</strong>
-            {{ employee.full_name }}
-        </p>
-
-        <p>
-            <strong>Department:</strong>
-            {{ employee.department }}
-        </p>
-
-        <p>
-            <strong>Position:</strong>
-            {{ employee.position or '-' }}
-        </p>
-
-        <p>
-            <strong>Current Status:</strong>
-            {{ employee.status }}
-        </p>
-
     </div>
-
-    <form method="POST">
-
-        <button type="submit">
-            Confirm Deactivate
-        </button>
-
-        <a href="{{ url_for('employees') }}">
-            Cancel
-        </a>
-
-    </form>
-
 </div>
-
-</body>
-</html>
+{% endblock %}

@@ -1,84 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+{% block title %}Retire Asset{% endblock %}
 
-    <title>Retire Asset</title>
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <h1 class="fw-bold mb-4">Retire Asset</h1>
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}"
-    >
-</head>
+        {% if error %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+        {% endif %}
 
-<body>
+        <div class="card shadow-sm border-warning">
+            <div class="card-header text-bg-warning">Retire Asset</div>
+            <div class="card-body p-4">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Asset ID</dt>
+                    <dd class="col-sm-8">{{ asset.asset_id }}</dd>
+                    <dt class="col-sm-4">Asset Tag</dt>
+                    <dd class="col-sm-8">{{ asset.asset_tag }}</dd>
+                    <dt class="col-sm-4">Device Name</dt>
+                    <dd class="col-sm-8">{{ asset.device_name }}</dd>
+                    <dt class="col-sm-4">Asset Type</dt>
+                    <dd class="col-sm-8">{{ asset.asset_type }}</dd>
+                    <dt class="col-sm-4">Brand / Model</dt>
+                    <dd class="col-sm-8">{{ asset.brand }} / {{ asset.model or '-' }}</dd>
+                    <dt class="col-sm-4">Current Status</dt>
+                    <dd class="col-sm-8">{{ asset.status }}</dd>
+                </dl>
 
-<div class="container">
+                <div class="alert alert-warning mt-3" role="alert">
+                    Are you sure you want to retire this asset? Retirement makes the asset read-only in the normal workflow. Assigned assets must be returned before retirement.
+                </div>
 
-    <h1>Retire Asset</h1>
-
-    <p>
-        Are you sure you want to retire this asset?
-    </p>
-
-    {% if error %}
-        <div class="error">
-            {{ error }}
+                <form id="retire-asset-form" method="POST" action="{{ url_for('retire_asset_route', asset_id=asset.asset_id) }}">
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('home') }}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" form="retire-asset-form" class="btn btn-warning">Confirm Retirement</button>
+                    </div>
+                </form>
+            </div>
         </div>
-    {% endif %}
-
-    <div class="asset-details">
-
-        <p>
-            <strong>Asset ID:</strong>
-            {{ asset.asset_id }}
-        </p>
-
-        <p>
-            <strong>Asset Tag:</strong>
-            {{ asset.asset_tag }}
-        </p>
-
-        <p>
-            <strong>Device Name:</strong>
-            {{ asset.device_name }}
-        </p>
-
-        <p>
-            <strong>Type:</strong>
-            {{ asset.asset_type }}
-        </p>
-
-        <p>
-            <strong>Brand:</strong>
-            {{ asset.brand }}
-        </p>
-
-        <p>
-            <strong>Current Status:</strong>
-            {{ asset.status }}
-        </p>
-
     </div>
-
-    <form method="POST">
-
-        <button type="submit">
-            Confirm Retire
-        </button>
-
-        <a href="{{ url_for('home') }}">
-            Cancel
-        </a>
-
-    </form>
-
 </div>
-
-</body>
-</html>
+{% endblock %}
