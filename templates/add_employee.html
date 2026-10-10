@@ -1,90 +1,60 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
+{% block title %}Add Employee{% endblock %}
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>Add Employee</title>
-
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}"
-    >
-</head>
-
-<body>
-
-<div class="container">
-
-    <h1>Add Employee</h1>
-    <p>Create a new employee record.</p>
-
-    {% if error %}
-        <div class="error">
-            {{ error }}
-        </div>
-    {% endif %}
-
-    <form method="POST">
-
-        <label>Employee Code</label>
-
-        <input
-            type="text"
-            name="employee_code"
-            required
-        >
-
-        <label>Full Name</label>
-
-        <input
-            type="text"
-            name="full_name"
-            required
-        >
-
-        <label>Department</label>
-
-        <input
-            type="text"
-            name="department"
-            required
-        >
-
-        <label>Position</label>
-
-        <input
-            type="text"
-            name="position"
-        >
-
-        <label>Email</label>
-
-        <input
-            type="email"
-            name="email"
-        >
-
-        <div class="form-actions">
-
-            <button type="submit">
-                Save Employee
-            </button>
-
-            <a href="{{ url_for('employees') }}">
-                Cancel
-            </a>
-
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="fw-bold mb-1">Add Employee</h1>
+                <p class="text-muted mb-0">Create a new employee record.</p>
+            </div>
+            <a href="{{ url_for('employees') }}" class="btn btn-outline-secondary">Back to Employees</a>
         </div>
 
-    </form>
+        {% if error %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+        {% endif %}
 
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <form id="add-employee-form" method="POST" action="{{ url_for('add_employee') }}">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="employee_code" class="form-label">Employee Code</label>
+                            <input type="text" id="employee_code" name="employee_code" class="form-control"
+                                   value="{{ request.form.get('employee_code', '') }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="full_name" class="form-label">Full Name</label>
+                            <input type="text" id="full_name" name="full_name" class="form-control"
+                                   value="{{ request.form.get('full_name', '') }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="department" class="form-label">Department</label>
+                            <input type="text" id="department" name="department" class="form-control"
+                                   value="{{ request.form.get('department', '') }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="position" class="form-label">Position</label>
+                            <input type="text" id="position" name="position" class="form-control"
+                                   value="{{ request.form.get('position', '') }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" id="email" name="email" class="form-control"
+                                   value="{{ request.form.get('email', '') }}">
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a href="{{ url_for('employees') }}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" form="add-employee-form" class="btn btn-primary">Save Employee</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
-
-</body>
-</html>
+{% endblock %}
