@@ -256,39 +256,53 @@ This is a portfolio application with remaining security work before public deplo
 
 ## Screenshots
 
-Screenshots will be added here. Use demonstration data and avoid showing credentials or private employee information.
-
 ### Login
 
-_Screenshot placeholder: login form._
+Login form for authenticated access to the application.
+
+![Login](screenshots/login.jpg)
 
 ### Dashboard
 
-_Screenshot placeholder: inventory statistics and navigation._
+Overview of asset statistics and employee totals.
+
+![Dashboard](screenshots/dashboard.jpg)
 
 ### Assets
 
-_Screenshot placeholder: asset listing, search, and status information._
+Asset inventory with search, status information, and management actions.
+
+![Assets](screenshots/assets.jpg)
 
 ### Employees
 
-_Screenshot placeholder: employee records and management actions._
+Employee records, departments, and Active or Inactive status.
+
+![Employees](screenshots/employees.jpg)
 
 ### Assignments
 
-_Screenshot placeholder: assignment history and return workflow._
+Assignment history showing employee allocations and asset returns.
+
+![Assignments](screenshots/assignment.jpg)
 
 ### Maintenance
 
-_Screenshot placeholder: maintenance history and completion details._
+Maintenance records with issues, costs, status, and completion details.
+
+![Maintenance](screenshots/maintenance.jpg)
 
 ### Reports
 
-_Screenshot placeholder: asset status/type summaries and Excel export._
+Asset summaries by status and type, with access to Excel export.
+
+![Reports](screenshots/reports.jpg)
 
 ### User Management
 
-_Screenshot placeholder: accounts, roles, and activation/deactivation actions._
+Application accounts with roles, status, and activation or deactivation actions.
+
+![User Management](screenshots/users.jpg)
 
 ## Future improvements
 
@@ -298,7 +312,7 @@ _Screenshot placeholder: accounts, roles, and activation/deactivation actions._
 - Add automated regression tests for routes, permissions, validation, and database transactions.
 - Prepare deployment with a production WSGI server, HTTPS, secure cookie settings, and security headers.
 - Review concurrent status changes and permanent deletion so safety checks remain atomic.
-- Add screenshots and expand setup and deployment documentation as the project evolves.
+- Expand setup and deployment documentation as the project evolves.
 
 ## Author and learning context
 
